@@ -237,6 +237,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InstallDBController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="DAL\MenuDAL.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -250,10 +251,24 @@
   <ItemGroup>
     <Content Include="App_StaticViews\editCustomerDlg.html" />
     <Content Include="Content\quantumcode.min.css" />
+    <Content Include="Content\tree.css" />
+    <Content Include="Images\empty.gif" />
+    <Content Include="Images\folder.gif" />
+    <Content Include="Images\folderopen.gif" />
+    <Content Include="Images\join.gif" />
+    <Content Include="Images\joinbottom.gif" />
+    <Content Include="Images\line.gif" />
+    <Content Include="Images\minus.gif" />
+    <Content Include="Images\minusbottom.gif" />
+    <Content Include="Images\page.gif" />
+    <Content Include="Images\plus.gif" />
+    <Content Include="Images\plusbottom.gif" />
+    <Content Include="Images\resizer.png" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\appContext.js" />
     <Content Include="Scripts\appRouter.js" />
     <Content Include="Scripts\Controllers\Home\index.js" />
+    <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
     <Content Include="Scripts\lib\colResizable-1.3.min.js" />
     <Content Include="Scripts\lib\jquery.dataTables.bootstrap.js" />
@@ -373,6 +388,8 @@
     <Content Include="Scripts\lib\require.js" />
     <Content Include="Scripts\lib\underscore-min.js" />
     <Content Include="Scripts\Views\Home\index.js" />
+    <Content Include="Scripts\Views\Shared\MPTTATree.js" />
+    <Content Include="Scripts\Views\Shared\MPTTATreeNode.js" />
     <Content Include="Scripts\Views\Shared\records.js" />
     <Content Include="Scripts\Views\Shared\table.js" />
     <Content Include="Scripts\Views\Shared\tableRow.js" />
@@ -444,6 +461,7 @@
     <Content Include="Views\Shared\_DefaultLayout.cshtml" />
     <Content Include="Views\InstallDB\index.cshtml" />
     <Content Include="Views\Home\MenuPartial.cshtml" />
+    <Content Include="Views\Test\Tree.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

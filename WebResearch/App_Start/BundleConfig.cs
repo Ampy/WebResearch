@@ -68,6 +68,10 @@ namespace WebResearch
                 "~/Content/site.css" 
             }));
 
+            bundles.Add(new StyleBundle("~/Content/tree").Include(new string[]{
+                "~/Content/tree.css"
+            }));
+
             bundles.Add(new StyleBundle("~/Content/redmond/css").Include(new string[] { 
                 "~/Content/redmond/jquery-ui-1.10.3.custom.min.css" 
             }));

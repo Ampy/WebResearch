@@ -1,7 +1,9 @@
-define(['underscore', 'models/menu', 'models/mpttatree'], function(_, menu, MPTTATree){
+define(['jquery', 'underscore', 'models/menu', 'models/mpttatree'], function($, _, menu, MPTTATree){
     var menus = MPTTATree.extend({
         model: menu,
-        url: "/menus"
+        initialize: function (options) {
+            $.extend(this, options);
+        }
     });
 
     return menus;

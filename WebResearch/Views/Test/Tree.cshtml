@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Tree";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pagelinks{
+    <link href="~/Content/tree.css" rel="stylesheet" />
+}
+
+@section pagebody{
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="row-fluid">
+                <div class="span12 widget-container-span"  id="tree"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@section pagescripts{
+    <script type="text/javascript">
+        require(['controllers/test/tree'], function (page) {
+            page.initialize({
+                treeDataUrl: '@Scripts.Url("~/api/test/tree")',
+                el: "#tree",
+                imgUrl: '@Scripts.Url("~/Images")'
+            });
+        });
+    </script>
+}
+

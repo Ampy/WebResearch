@@ -7,6 +7,13 @@ function(Backbone, _, mpttanode){
         },
         initialize: function(models, options){
         },
+        buildTree: function () {
+            var context = this;
+            this.each(function (node) {
+                node.set("tree", context);
+                context.calculateNodeLayer(node);
+            });
+        },
         isRoot: function(node){
             if(null == node){
                 return false;
@@ -32,6 +39,10 @@ function(Backbone, _, mpttanode){
 
             if(1 < root.length){
                 throw new Error("存在" + root.length + "个根节点。树构造错误");
+            }
+            
+            if (0 == root.length) {
+                throw new Error("不存在根节点，树构造错误");
             }
 
             return root[0];

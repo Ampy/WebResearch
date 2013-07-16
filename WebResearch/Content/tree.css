@@ -1,0 +1,77 @@
+#tree {
+    font-size: 12px;
+    color: #666;
+    font-family: verdana, geneva, arial, helvetica, sans-serif;
+    white-space: nowrap;
+    width:100%;
+    height:100%;
+    overflow: auto;
+}
+
+#tree .nodeediting .nodeselect,
+#tree .nodeediting .node{
+    display: none;
+}
+
+#tree .nodeselect,
+#tree .node{
+    cursor: pointer;
+    padding-right: 2px;
+    padding-left: 2px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+    white-space: nowrap
+}
+
+#tree .editor{
+    display: none;
+}
+
+#tree .nodeediting .editor{
+    display: block;
+    padding: 13px 15px 14px 20px;
+    margin: 0;
+}
+
+/*#tree .node:hover{
+    cursor: pointer;
+    font-weight: bold;
+}*/
+
+#tree .nodedragover{
+    background-color: #808080;
+    color: #ffffff;
+    border: 1px;
+}
+
+#tree .node img,
+#tree .nodeselect img
+{
+    border-right: 0px;
+    border-top: 0px;
+    vertical-align: middle;
+    border-left: 0px;
+    border-bottom: 0px;
+    display: inline;
+}
+
+#tree .nodeselect input,
+#tree .node input{
+    height:13px;
+    vertical-align:bottom;
+    margin-bottom:3px;
+    margin-top:-1px;
+    display: inline;
+}
+
+#tree .nodeselect label
+{
+    display: inline;
+    background-color: #c0d2ec;
+    font-weight: bold;
+}
+
+#tree .node label
+{
+    display: inline;
+}

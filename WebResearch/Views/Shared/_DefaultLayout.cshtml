@@ -20,10 +20,11 @@
 
     @Styles.Render("~/Content/quantumcode")
     
-    <!--[if lte IE 8]>    @Styles.Render("~/Content/quie")
+    <!--[if lte IE 8]>
+    @Styles.Render("~/Content/quie")
     <![endif]-->
 
-    @RenderSection("links", required: false)
+    @RenderSection("links", required: true)
 
     @Styles.Render("~/Content/redmond/css")
 
