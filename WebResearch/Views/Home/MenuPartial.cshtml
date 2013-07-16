@@ -1,0 +1,13 @@
+﻿@model List<WebResearch.Common.Menu>
+@foreach (var m in Model)
+{
+    if (@ViewContext.ParentActionViewContext.RouteData.Values["controller"].Equals(m.Controller) &&
+        @ViewContext.ParentActionViewContext.RouteData.Values["action"].Equals(m.Action))
+    {
+        <li class="active">@Html.ActionLink(m.Name, m.Action, m.Controller)</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink(m.Name, m.Action, m.Controller)</li>
+    }
+}

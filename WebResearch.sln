@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResearch", "WebResearch\WebResearch.csproj", "{1A6D751D-B0E9-4C35-BD56-179773672ACE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResearch.Relation.Datas", "WebResearch.Relation.Datas\WebResearch.Relation.Datas.csproj", "{9065F8B8-337B-411E-9336-0BAA6AD420E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A6D751D-B0E9-4C35-BD56-179773672ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6D751D-B0E9-4C35-BD56-179773672ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6D751D-B0E9-4C35-BD56-179773672ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6D751D-B0E9-4C35-BD56-179773672ACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9065F8B8-337B-411E-9336-0BAA6AD420E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9065F8B8-337B-411E-9336-0BAA6AD420E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9065F8B8-337B-411E-9336-0BAA6AD420E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9065F8B8-337B-411E-9336-0BAA6AD420E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

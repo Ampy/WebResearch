@@ -1,0 +1,60 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - @System.Configuration.ConfigurationManager.AppSettings["productName"]</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    @Styles.Render("~/Content/bootstrap")
+
+    @Styles.Render("~/Content/font-awesome")
+
+    <!--[if IE 7]>
+    @Styles.Render("~/Content/faie7")
+    <![endif]-->
+
+    @Styles.Render("~/Content/quantumcode")
+    
+    <!--[if lte IE 8]>    @Styles.Render("~/Content/quie")
+    <![endif]-->
+
+    @RenderSection("links", required: false)
+
+    @Styles.Render("~/Content/redmond/css")
+
+    <style>
+        html,body
+        {
+            height:100%;
+        }
+
+        .brand img
+        {
+            margin:0;
+            padding:0;
+            max-height:40px;
+            border:0 none;
+        }
+
+        .ui-dialog-titlebar-close {
+          visibility: hidden;
+        }
+    </style>
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    @RenderSection("navbar", required: false)
+
+    @RenderBody()
+
+    <script type="text/javascript" src='@Scripts.Url("~/Scripts/lib/require.js")' data-main='@Scripts.Url("~/Scripts/main.js")'></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

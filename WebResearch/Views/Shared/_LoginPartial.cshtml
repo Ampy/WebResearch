@@ -1,0 +1,17 @@
+﻿@if (Request.IsAuthenticated) {
+        <a class="user-menu dropdown-toggle" href="#" data-toggle="dropdown">
+            <!--<img style="display: none" alt="Jason's Photo" src="assets/avatars/user.jpg" class="nav-user-photo" />-->
+            <span id="user_info">
+                <small>欢迎,</small>@((User as WebResearch.Common.CustomPrincipal).DisplayName)
+            </span>
+            <i class="icon-caret-down"></i>
+        </a>
+        <ul id="user_menu" class="pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-closer">
+            <li><a href='#'><i class="icon-off"></i>退出</a></li>
+        </ul>
+} else {
+    <ul style="display:none">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}
