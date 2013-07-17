@@ -7,7 +7,7 @@ function(Backbone, _){
             rgtvalue:1,
             nodeid:"",
             layer: 1,
-            expand: true,
+            expand: false,
             visible: true,
             checked: false,
             selected: false,

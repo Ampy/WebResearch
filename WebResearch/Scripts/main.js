@@ -10,7 +10,8 @@
         quantumcode: 'lib/quantumcode',
         quantumcodee: 'lib/quantumcode-elements',
         colresizable: 'lib/colResizable-1.3.min',
-        jqbrowser: 'lib/jqBrowser'
+        jqbrowser: 'lib/jqBrowser',
+        hashtable: 'lib/hashtable'
     },
     shim: {
         'underscore': {
@@ -43,6 +44,9 @@
         },
         'colresizable': {
             deps: ['jquery', 'jqbrowser']
+        },
+        'hashtable': {
+            exports: 'Hashtable'
         }
     },
     urlArgs: "bust=" + (new Date()).getTime()

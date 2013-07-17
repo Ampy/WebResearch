@@ -1,9 +1,16 @@
-﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode'],
-    function ($, Backbone, _, MPTTATreeNodeView) {
+﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode', 'hashtable', 'templates', 'jqueryui'],
+    function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper) {
         var MPTTATreeView = Backbone.View.extend({
+            template: _.template([
+                '<div id="<%= dlgid %>"></div>'
+            ].join('')),
+            editorTemplateUrl: '',
+            dlgid: '',
             editable: false,
             vent: null,
             imgUrl: '',
+            treeNodes: null,
+            selectedNodeId: null,
             initialize: function (options) {
                 _.bindAll(this, "addNode");
                 this.model.bind("remove", this.removeNode, this);
@@ -11,9 +18,14 @@
                 this.model.bind("reset", this.render, this);
                 this.vent = options.vent;
                 this.vent.bind("refreshtree", this.refreshTree, this);
+                this.vent.bind("nodeselected", this.nodeSelected, this);
+                this.vent.bind("addingnode", this.addingNode, this);
                 this.editable = options.editable;
                 this.labelTemplate = options.labelTemplate;
                 this.imgUrl = options.imgUrl;
+                this.editorTemplateUrl = options.editorTemplateUrl;
+
+                this.treeNodes = new Hashtable();
             },
             attributes: function () {
                 return {
@@ -26,6 +38,34 @@
             render: function () {
                 this.$el.empty();
 
+                var context = this;
+
+                this.dlgid = (new Date()).getTime();
+                $(this.el).html(this.template({
+                    dlgid: this.dlgid
+                }));
+
+                if ('' != this.editorTemplateUrl) {
+                    templateHelper.fetchTemplate(this.editorTemplateUrl, function (tmpl) {
+                        $("#" + context.dlgid).html(tmpl());
+
+                        $("#" + context.dlgid).dialog({
+                            autoOpen: false,
+                            modal: true,
+                            buttons: {
+                                "保存": function () {
+                                    $("[data-bindingfield]").each(function (index, c) {
+                                        console.log(c);
+                                    });
+                                },
+                                "取消": function () {
+                                    $("#" + context.dlgid).dialog("close");
+                                }
+                            }
+                        });
+                    });
+                }
+
                 var root = this.model.getRoot();
 
                 root.set({ "editable": this.editable });
@@ -36,12 +76,26 @@
                 if (root.hasChild()) {
                     var that = this;
                     root.childs().each(function (item) {
+                        if (!root.get("expand"))
+                            item.set("visible", false);
                         that.appendNode(node, item);
                     });
                 }
             },
+            addingNode: function () {
+                $("#" + this.dlgid).dialog("open");
+            },
+            nodeSelected: function(nodeid){
+                this.selectedNodeId = nodeid;
+            },
             refreshTree: function () {
-                this.model.sort();
+                this.treeNodes.each(function (key, value) {
+                    value.delete();
+                });
+
+                this.treeNodes.clear();
+
+                this.render();
             },
             createNodeView: function (model) {
                 if (this.labelTemplate) {
@@ -66,11 +120,15 @@
                 cnode.set({ "editable": this.editable });
                 var subnode = this.createNodeView(cnode);
 
+                this.treeNodes.put(cnode.get("nodeid"), subnode);
+
                 this.$el.append(subnode.render().el);
 
                 if (cnode.hasChild()) {
                     var that = this;
                     cnode.childs().each(function (item) {
+                        if (!cnode.get("expand"))
+                            item.set("visible", false);
                         that.appendNode(pnodeview, item);
                     });
                 }
@@ -81,6 +139,8 @@
                 var parentid = parentNode.get("nodeid");
                 newNode.set({ "editable": this.editable });
                 var node = this.createNodeView(newNode);
+
+                this.treeNodes.put(newNode.get("nodeid"), newNode);
 
                 if (!parentNode.isRoot()) {
                     var lastChild = parentNode.lastChild();
@@ -106,7 +166,14 @@
             },
             removeNode: function (delNode) {
                 var nodeid = delNode.get("nodeid");
+
+                var nodeView = this.treeNodes.get(nodeid);
+
+                if (nodeView)
+                    nodeView.delete();
+
                 delNode.destroy();
+
                 $('#' + nodeid, this.$el).remove();
             },
             getSelected: function () {

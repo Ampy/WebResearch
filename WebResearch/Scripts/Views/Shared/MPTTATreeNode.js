@@ -2,6 +2,7 @@
     function ($, Backbone, _) {
         var MPTTATreeNodeView = Backbone.View.extend({
             imgUrl: '',
+            vent: null,
             template: _.template([
                 "<% if(data.visible) { %>",
                     "<% if(data.selected) {%>",
@@ -129,7 +130,7 @@
                     "line": this.imgUrl + "/line.gif"
                 }
             },
-            render:function(){
+            render: function () {
                 this.$el.html(this.template({ data: this.model.toJSON(),
                     labelTemplate: this.labelTemplate,
                     editorTemplate: this.editorTemplate,
@@ -140,6 +141,8 @@
                 this.txtNodeName = this.$("#txtNodeName_" + this.model.get("nodeid"));
 
                 this.$el.attr("id", this.model.get("nodeid"));
+
+                this.$el.attr("style", this.model.get("visible") ? "display:block" : "display:none");
 
                 return this;
             },
@@ -152,7 +155,9 @@
                 this.model.bind('change:editable', this.render, this);
                 this.model.bind('destroy', this.delete, this);
 
-                options.vent.bind("refresh", this.refresh, this);
+                this.vent = options.vent;
+
+                this.vent.bind("refresh", this.refresh, this);
 
                 if(options.labelTemplate){
                     this.labelTemplate = options.labelTemplate;
@@ -171,8 +176,9 @@
                 this.$el.addClass("nodeediting")
             },
             addSubNode: function(ev){
-                var newNode = new QuantumCode.MPTTANode();
-                this.model.get("tree").addNode(newNode, this.model);
+                //var newNode = new QuantumCode.MPTTANode();
+                //this.model.get("tree").addNode(newNode, this.model);
+                this.vent.trigger("addingnode");
             },
             buttonCommand: function(ev){
                 var commandType = $(ev.target).data("type");
@@ -201,10 +207,12 @@
                 this.SelectAll(false);
                 if(isSelected)
                 {
-                    this.model.set({"selected":false});
+                    this.model.set({ "selected": false });
+                    this.vent.trigger("nodeselected", "");
                 }
                 else{
-                    this.model.set({"selected":true});
+                    this.model.set({ "selected": true });
+                    this.vent.trigger("nodeselected", this.model.get("nodeid"));
                 }
             },
             toggleClick: function(ev){
@@ -276,7 +284,7 @@
 
                             try {
                                 this.model.get("tree").moveNode(this.model, pparent);
-                                this.options.vent.trigger("refreshtree");
+                                this.vent.trigger("refreshtree");
                             }
                             catch (err) {
                                 alert(err);
@@ -285,7 +293,7 @@
                         else {
                             try {
                                 this.model.get("tree").moveNodePrev(this.model);
-                                this.options.vent.trigger("refreshtree");
+                                this.vent.trigger("refreshtree");
                             }
                             catch (err) {
                                 alert(err);
@@ -305,7 +313,7 @@
 
                             try {
                                 this.model.get("tree").moveNode(this.model, pparent);
-                                this.options.vent.trigger("refreshtree");
+                                this.vent.trigger("refreshtree");
                             }
                             catch (err) {
                                 alert(err);
@@ -314,7 +322,7 @@
                         else {
                             try {
                                 this.model.get("tree").moveNodeNext(this.model);
-                                this.options.vent.trigger("refreshtree");
+                                this.vent.trigger("refreshtree");
                             }
                             catch (err) {
                                 alert(err);
@@ -325,7 +333,7 @@
                         var siblineNode = this.model.get("tree").getPrevNode(this.model);
                         try {
                             this.model.get("tree").moveNode(this.model, siblineNode);
-                            this.options.vent.trigger("refreshtree");
+                            this.vent.trigger("refreshtree");
                         }
                         catch (err) {
                             alert(err);
@@ -335,7 +343,7 @@
                         var siblineNode = this.model.get("tree").getNextNode(this.model);
                         try {
                             this.model.get("tree").moveNode(this.model, siblineNode);
-                            this.options.vent.trigger("refreshtree");
+                            this.vent.trigger("refreshtree");
                         }
                         catch (err) {
                             alert(err);

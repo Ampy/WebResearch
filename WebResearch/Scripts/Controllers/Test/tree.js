@@ -15,7 +15,8 @@
                             editable: true,
                             spanclass: "span11",
                             vent: pagecontext.current().vent,
-                            imgUrl: options.imgUrl
+                            imgUrl: options.imgUrl,
+                            editorTemplateUrl: options.editorTemplateUrl
                         });
 
                         tree.render();

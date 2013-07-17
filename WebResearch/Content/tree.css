@@ -20,7 +20,9 @@
     padding-left: 2px;
     padding-bottom: 1px;
     padding-top: 1px;
-    white-space: nowrap
+    white-space: nowrap;
+    clear: both;
+    position:relative;
 }
 
 #tree .editor{

@@ -250,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_StaticViews\editCustomerDlg.html" />
+    <Content Include="App_StaticViews\editMenuDlg.html" />
     <Content Include="Content\quantumcode.min.css" />
     <Content Include="Content\tree.css" />
     <Content Include="Images\empty.gif" />
@@ -271,6 +272,7 @@
     <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
     <Content Include="Scripts\lib\colResizable-1.3.min.js" />
+    <Content Include="Scripts\lib\hashtable.js" />
     <Content Include="Scripts\lib\jquery.dataTables.bootstrap.js" />
     <Content Include="Scripts\lib\jquery.dataTables.min.js" />
     <Content Include="Scripts\main.js" />
@@ -280,6 +282,7 @@
     <Content Include="Scripts\Models\menus.js" />
     <Content Include="Scripts\Models\mpttanode.js" />
     <Content Include="Scripts\Models\mpttatree.js" />
+    <Content Include="Scripts\pagableRecord.js" />
     <Content Include="Scripts\templates.js" />
     <Content Include="Content\boostrap-ie6.min.css" />
     <Content Include="Content\bootstrap-responsive.css" />
@@ -387,7 +390,6 @@
     <Content Include="Scripts\lib\quantumcode.js" />
     <Content Include="Scripts\lib\require.js" />
     <Content Include="Scripts\lib\underscore-min.js" />
-    <Content Include="Scripts\Views\Home\index.js" />
     <Content Include="Scripts\Views\Shared\MPTTATree.js" />
     <Content Include="Scripts\Views\Shared\MPTTATreeNode.js" />
     <Content Include="Scripts\Views\Shared\records.js" />

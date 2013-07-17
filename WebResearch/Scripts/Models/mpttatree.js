@@ -2,7 +2,7 @@ define(['backbone', 'underscore', 'models/mpttanode'],
 function(Backbone, _, mpttanode){
     var MPTTATree = Backbone.Collection.extend({
         model: mpttanode,
-        comparator: function(node){
+        comparator: function (node) {
             return node.get("lftvalue");
         },
         initialize: function(models, options){
