@@ -76,12 +76,12 @@
                 "</div>",
                 "<%= editorTemplate(data) %>"
             ].join('')),
-            attributes: function(){
-                return {
-                    id: this.model.get("nodeid"),
-                    class: this.options.spanclass
-                }
-            },
+            //attributes: function(){
+            //    return {
+            //        id: this.model.get("nodeid"),
+            //        class: this.options.spanclass
+            //    }
+            //},
             events:{
                 "click img.btntoggle": "toggleClick",
                 "change :checkbox": "checkedChanged",
@@ -144,6 +144,8 @@
 
                 this.$el.attr("style", this.model.get("visible") ? "display:block" : "display:none");
 
+                this.$el.addClass(this.options.spanclass);
+
                 return this;
             },
             initialize: function(options){
@@ -153,7 +155,7 @@
                 this.model.bind('change:checked', this.render, this);
                 this.model.bind('change:selected', this.render, this);
                 this.model.bind('change:editable', this.render, this);
-                this.model.bind('destroy', this.delete, this);
+                this.model.bind('destroy', this.deleteMySelf, this);
 
                 this.vent = options.vent;
 
@@ -165,12 +167,12 @@
 
                 this.imgUrl = options.imgUrl;
             },
-            delete: function(){
-                this.undelegateEvents();
-                $(this.el).removeData().unbind();
+            deleteMySelf: function(){
+                //this.undelegateEvents();
+                //$(this.el).removeData().unbind();
 
-                this.remove();
-                Backbone.View.prototype.remove.call(this);
+                //this.remove();
+                //Backbone.View.prototype.remove.call(this);
             },
             edit: function(ev){
                 this.$el.addClass("nodeediting")
@@ -316,7 +318,7 @@
                                 this.vent.trigger("refreshtree");
                             }
                             catch (err) {
-                                alert(err);
+                                alert(err.message);
                             }
                         }
                         else {
@@ -325,7 +327,7 @@
                                 this.vent.trigger("refreshtree");
                             }
                             catch (err) {
-                                alert(err);
+                                alert(err.message);
                             }
                         }
                         break;
@@ -336,7 +338,7 @@
                             this.vent.trigger("refreshtree");
                         }
                         catch (err) {
-                            alert(err);
+                            alert(err.message);
                         }
                         break;
                     case "downin":
@@ -346,7 +348,7 @@
                             this.vent.trigger("refreshtree");
                         }
                         catch (err) {
-                            alert(err);
+                            alert(err.message);
                         }
                         break;
                 }

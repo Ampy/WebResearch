@@ -11,6 +11,8 @@
             imgUrl: '',
             treeNodes: null,
             selectedNodeId: null,
+            modelFactory: function () { },
+            currentMode: 'view',
             initialize: function (options) {
                 _.bindAll(this, "addNode");
                 this.model.bind("remove", this.removeNode, this);
@@ -24,13 +26,9 @@
                 this.labelTemplate = options.labelTemplate;
                 this.imgUrl = options.imgUrl;
                 this.editorTemplateUrl = options.editorTemplateUrl;
+                this.modelFactory = options.modelFactory;
 
                 this.treeNodes = new Hashtable();
-            },
-            attributes: function () {
-                return {
-                    class: this.options.spanclass
-                }
             },
             comparator: function (m) {
                 return m.get("lftvalue");
@@ -45,6 +43,8 @@
                     dlgid: this.dlgid
                 }));
 
+                $(this.el).addClass(this.options.spanclass);
+
                 if ('' != this.editorTemplateUrl) {
                     templateHelper.fetchTemplate(this.editorTemplateUrl, function (tmpl) {
                         $("#" + context.dlgid).html(tmpl());
@@ -54,9 +54,15 @@
                             modal: true,
                             buttons: {
                                 "保存": function () {
-                                    $("[data-bindingfield]").each(function (index, c) {
-                                        console.log(c);
-                                    });
+                                    switch (context.currentMode) {
+                                        case "adding":
+                                            var newNode = context.modelFactory();
+                                            $("[data-bindingfield]").each(function (index, c) {
+                                                newNode.set($(c).data("bindingfield"), $(c).val());
+                                            });
+                                            context.model.addNode(newNode, context.selectedNodeId);
+                                            break;
+                                    }
                                 },
                                 "取消": function () {
                                     $("#" + context.dlgid).dialog("close");
@@ -83,6 +89,7 @@
                 }
             },
             addingNode: function () {
+                this.currentMode = 'adding';
                 $("#" + this.dlgid).dialog("open");
             },
             nodeSelected: function(nodeid){
@@ -90,7 +97,7 @@
             },
             refreshTree: function () {
                 this.treeNodes.each(function (key, value) {
-                    value.delete();
+                    //value.delete();
                 });
 
                 this.treeNodes.clear();
@@ -169,8 +176,8 @@
 
                 var nodeView = this.treeNodes.get(nodeid);
 
-                if (nodeView)
-                    nodeView.delete();
+                //if (nodeView)
+                //    nodeView.delete();
 
                 delNode.destroy();
 

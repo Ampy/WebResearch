@@ -32,7 +32,7 @@ function(Backbone, _, mpttanode){
         getRoot: function(){
             var targetValue = (this.models.length - 1) * 2 + 1;
 
-            var root = this.models.filter(function(node){
+            var root = _.filter(this.models, function(node){
                 var v = node.get("rgtvalue") - node.get("lftvalue");
                 return  v == targetValue;
             });
@@ -65,7 +65,7 @@ function(Backbone, _, mpttanode){
             var left = targetNode.get("lftvalue");
             var right = targetNode.get("rgtvalue");
 
-            var targets = this.models.filter(function(node){
+            var targets = _.filter(this.models, function(node){
                 return node.get("lftvalue") > left && node.get("lftvalue") < right;
             });
 
@@ -87,7 +87,7 @@ function(Backbone, _, mpttanode){
                 var left = targetNode.get("lftvalue");
                 var right = targetNode.get("rgtvalue");
 
-                var targets = this.models.filter(function(node){
+                var targets = _.filter(this.models, function(node){
                     return node.get("lftvalue") >= left && node.get("lftvalue") <= right;
                 });
 
@@ -116,7 +116,7 @@ function(Backbone, _, mpttanode){
             var left = targetNode.get("lftvalue");
             var right = targetNode.get("rgtvalue");
 
-            var targets = this.models.filter(function(node){
+            var targets = _.filter(this.models, function(node){
                 return node.get("lftvalue") < left && node.get("rgtvalue") > right;
             });
 
@@ -143,7 +143,7 @@ function(Backbone, _, mpttanode){
             var right = targetNode.get("rgtvalue");
             var layer = targetNode.get("layer");
 
-            var targets = this.models.filter(function(node){
+            var targets = _.filter(this.models, function(node){
                 return node.get("layer") == layer + 1 && node.get("lftvalue") > left && node.get("rgtvalue") < right;
             });
 
@@ -259,7 +259,7 @@ function(Backbone, _, mpttanode){
             if(null != targetNode){
                 var left = targetNode.get("lftvalue");
                 var right = targetNode.get("rgtvalue");
-                var parents = this.models.filter(function(node){
+                var parents = _.filter(this.models, function(node){
                     return node.get("lftvalue") <= left && node.get("rgtvalue") >= right;
                 });
                 targetNode.set("layer", parents.length);
@@ -324,19 +324,19 @@ function(Backbone, _, mpttanode){
                 var left = targetNode.get("lftvalue");
                 var right = targetNode.get("rgtvalue");
 
-                var targets1 = this.models.filter(function(node){
+                var targets1 = _.filter(this.models, function(node){
                     return node.get("lftvalue") >= left && node.get("rgtvalue") <= right;
                 });
 
                 this.remove(targets1);
 
-                _(this.models.filter(function(node){
+                _(_.filter(this.models, function(node){
                     return node.get("lftvalue") > left;
                 })).each(function(node){
                         node.set("lftvalue", node.get("lftvalue") - (right - left + 1));
                     });
 
-                _(this.models.filter(function(node){
+                _(_.filter(this.models, function(node){
                     return node.get("rgtvalue") > right;
                 })).each(function(node){
                         node.set("rgtvalue", node.get("rgtvalue") - (right - left + 1));
@@ -377,7 +377,7 @@ function(Backbone, _, mpttanode){
 
             //找出移动路径中影响的节点
             var count1 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") > left && node.get("lftvalue") < pleft &&
                     node.get("rgtvalue") > right && node.get("rgtvalue") < pright;
             })).each(function(node){
@@ -387,7 +387,7 @@ function(Backbone, _, mpttanode){
 
             //找出原所有的父节点
             var count2 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") < left && node.get("rgtvalue") < pright &&
                     node.get("rgtvalue") > right;
             })).each(function(node){
@@ -397,7 +397,7 @@ function(Backbone, _, mpttanode){
 
             //找出新所有的父节点
             var count3 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") <= pleft && node.get("lftvalue") > left &&
                     node.get("rgtvalue") >= pright;
             })).each(function(node){
@@ -407,7 +407,7 @@ function(Backbone, _, mpttanode){
 
             //找出新的兄弟节点
             var count4 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") > pleft && node.get("rgtvalue") < pright;
             })).each(function(node){
                     count4 += 1;
@@ -464,7 +464,7 @@ function(Backbone, _, mpttanode){
 
             //找出移动路径中影响的节点
             var count1 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") > pleft && node.get("lftvalue") < left &&
                     node.get("rgtvalue") > pright && node.get("rgtvalue") < right;
             })).each(function(node){
@@ -475,7 +475,7 @@ function(Backbone, _, mpttanode){
 
             //找出原所有的父节点
             var count2 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") < left && node.get("lftvalue") > pleft &&
                     node.get("rgtvalue")  > right;
             })).each(function(node){
@@ -485,7 +485,7 @@ function(Backbone, _, mpttanode){
 
             //找出新所有父节点
             var count3 = 0;
-            _(this.models.filter(function(node){
+            _(_.filter(this.models, function(node){
                 return node.get("lftvalue") <= pleft && node.get("rgtvalue") >= pright &&
                     node.get("rgtvalue") < right;
             })).each(function(node){
@@ -529,7 +529,7 @@ function(Backbone, _, mpttanode){
 
             //找出除了根节点以外的父节点路径
             var count1 = 0;
-            _(this.models.filter(function(n){
+            _(_.filter(this.models, function(n){
                 return n.get("rgtvalue") > node.get("rgtvalue") && n.get("lftvalue") < node.get("lftvalue") &&
                     n.get("lftvalue") > 1;
             })).each(function(n){
@@ -539,7 +539,7 @@ function(Backbone, _, mpttanode){
 
             //找出除了自身树以及父节点路径以外的所有其他节点
             var count2 = 0;
-            _(this.models.filter(function(n){
+            _(_.filter(this.models, function(n){
                 return n.get("rgtvalue") > node.get("rgtvalue") && n.get("rgtvalue") < root.get("rgtvalue") &&
                     n.get("lftvalue") > node.get("lftvalue");
             })).each(function(n){

@@ -1,5 +1,5 @@
-﻿define(['jquery', 'backbone', 'underscore', 'views/shared/MPTTATree', 'models/menus', 'appcontext'],
-    function ($, Backbone, _, TreeView, menus, pagecontext) {
+﻿define(['jquery', 'backbone', 'underscore', 'views/shared/MPTTATree', 'models/menus', 'models/menu', 'appcontext'],
+    function ($, Backbone, _, TreeView, menus, menu, pagecontext) {
         return {
             initialize: function (options) {
                 var mymenus = new menus({
@@ -16,7 +16,10 @@
                             spanclass: "span11",
                             vent: pagecontext.current().vent,
                             imgUrl: options.imgUrl,
-                            editorTemplateUrl: options.editorTemplateUrl
+                            editorTemplateUrl: options.editorTemplateUrl,
+                            modelFactory: function () {
+                                return new menu();
+                            }
                         });
 
                         tree.render();
