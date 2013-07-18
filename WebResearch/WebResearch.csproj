@@ -273,6 +273,7 @@
     <Content Include="Scripts\appContext.js" />
     <Content Include="Scripts\appRouter.js" />
     <Content Include="Scripts\Controllers\Home\index.js" />
+    <Content Include="Scripts\Controllers\Shared\_Layout.js" />
     <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
     <Content Include="Scripts\lib\colResizable-1.3.min.js" />
@@ -397,6 +398,8 @@
     <Content Include="Scripts\Views\Shared\MPTTATree.js" />
     <Content Include="Scripts\Views\Shared\MPTTATreeNode.js" />
     <Content Include="Scripts\Views\Shared\records.js" />
+    <Content Include="Scripts\Views\Shared\sidebarItem.js" />
+    <Content Include="Scripts\Views\Shared\subSidebarItem.js" />
     <Content Include="Scripts\Views\Shared\table.js" />
     <Content Include="Scripts\Views\Shared\tableRow.js" />
     <Content Include="Scripts\Views\Shared\widget.js" />
