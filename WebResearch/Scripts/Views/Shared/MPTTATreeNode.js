@@ -73,23 +73,15 @@
                             "<a class='btnAdd'><i class='icon-plus'></i></a>",
                         "<% } %>",
                     "<% } %>",
-                "</div>",
-                "<%= editorTemplate(data) %>"
+                "</div>"
             ].join('')),
-            //attributes: function(){
-            //    return {
-            //        id: this.model.get("nodeid"),
-            //        class: this.options.spanclass
-            //    }
-            //},
             events:{
                 "click img.btntoggle": "toggleClick",
                 "change :checkbox": "checkedChanged",
                 "click img#imgselector": "selectNode",
                 "click a.btnMove": "moveNode",
                 "click a.btnEdit": "edit",
-                "click a.btnAdd": "addSubNode",
-                "click button.btn": "buttonCommand"
+                "click a.btnAdd": "addSubNode"
             },
             labelTemplate:_.template([
                 "<% if(editable) { %>",
@@ -100,20 +92,6 @@
                     "<% } %>",
                 "<% } %>",
                 "<label for='chk<%= nodeid %>' title='<%= menuCaption %>'><%= menuCaption %></label>"
-            ].join('')),
-            editorTemplate: _.template([
-                //'<% if(editable) { %>',
-                    "<div class='editor input-append'>",
-                        "<% if(nodeid == '') { %>",
-                            "<input id='txtNodeID_<%= nodeid %>' type='text' class='span1' value='<%= nodeid %>' placeholder='节点ID' />",
-                        "<% } else { %>",
-                            "<input id='txtNodeID_<%= nodeid %>' type='text' class='span1 uneditable-input' value='<%= nodeid %>' plancehodler='节点ID' />",
-                        "<% } %>",
-                        "<input id='txtNodeName_<%= nodeid %>' type='text' class='span1' value='<%= nodename %>' placeholder='节点名称' />",
-                        "<button class='btn' type='button' data-type='OK'>确定</button>",
-                        "<button class='btn' type='button' data-type='CANCEL'>取消</button>",
-                    "</div>"//,
-                //'<% } %>'
             ].join('')),
             imgs: function(){
                 return{
@@ -175,7 +153,7 @@
                 //Backbone.View.prototype.remove.call(this);
             },
             edit: function(ev){
-                this.$el.addClass("nodeediting")
+                this.vent.trigger("editingnode");
             },
             addSubNode: function(ev){
                 //var newNode = new QuantumCode.MPTTANode();

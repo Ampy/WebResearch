@@ -6,6 +6,7 @@
             ].join('')),
             editorTemplateUrl: '',
             dlgid: '',
+            dlgformid: '',
             editable: false,
             vent: null,
             imgUrl: '',
@@ -18,10 +19,13 @@
                 this.model.bind("remove", this.removeNode, this);
                 this.model.bind("afterAddNode", this.addNode, this);
                 this.model.bind("reset", this.render, this);
+
                 this.vent = options.vent;
                 this.vent.bind("refreshtree", this.refreshTree, this);
                 this.vent.bind("nodeselected", this.nodeSelected, this);
                 this.vent.bind("addingnode", this.addingNode, this);
+                this.vent.bind("editingnode", this.editingNode, this);
+
                 this.editable = options.editable;
                 this.labelTemplate = options.labelTemplate;
                 this.imgUrl = options.imgUrl;
@@ -39,6 +43,7 @@
                 var context = this;
 
                 this.dlgid = (new Date()).getTime();
+
                 $(this.el).html(this.template({
                     dlgid: this.dlgid
                 }));
@@ -47,7 +52,11 @@
 
                 if ('' != this.editorTemplateUrl) {
                     templateHelper.fetchTemplate(this.editorTemplateUrl, function (tmpl) {
-                        $("#" + context.dlgid).html(tmpl());
+                        context.dlgformid = (new Date()).getTime();
+
+                        $("#" + context.dlgid).html(tmpl({
+                            formid: context.dlgformid
+                        }));
 
                         $("#" + context.dlgid).dialog({
                             autoOpen: false,
@@ -60,7 +69,17 @@
                                             $("[data-bindingfield]").each(function (index, c) {
                                                 newNode.set($(c).data("bindingfield"), $(c).val());
                                             });
-                                            context.model.addNode(newNode, context.selectedNodeId);
+                                            context.model.addNodeByParentID(newNode, context.selectedNodeId);
+                                            context.vent.trigger("refresh", context.selectedNodeId);
+                                            $("#" + context.dlgid).dialog("close");
+                                            break;
+                                        case "editing":
+                                            var editNode = context.model.getNode(context.selectedNodeId);
+                                            $("[data-bindingfield]").each(function (index, c) {
+                                                editNode.set($(c).data("bindingfield"), $(c).val());
+                                            });
+                                            context.vent.trigger("refresh", context.selectedNodeId);
+                                            $("#" + context.dlgid).dialog("close");
                                             break;
                                     }
                                 },
@@ -88,8 +107,23 @@
                     });
                 }
             },
+            editingNode: function(){
+                this.currentMode = 'editing';
+                if (null != this.selectedNodeId &&
+                    '' != this.selectedNodeId) {
+                    var editNode = this.model.getNode(this.selectedNodeId);
+                    $("[data-bindingfield]").each(function (index, c) {
+                        $(c).val(editNode.get($(c).data("bindingfield")));
+                    });
+                    $("#" + this.dlgid).dialog("open");
+                }
+                else {
+                    alert('必须选择一个要编辑的节点');
+                }
+            },
             addingNode: function () {
                 this.currentMode = 'adding';
+                this.vent.trigger("resetform", this.dlgformid);
                 $("#" + this.dlgid).dialog("open");
             },
             nodeSelected: function(nodeid){

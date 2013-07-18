@@ -468,9 +468,11 @@
     <Content Include="Views\InstallDB\index.cshtml" />
     <Content Include="Views\Home\MenuPartial.cshtml" />
     <Content Include="Views\Test\Tree.cshtml" />
+    <Content Include="Views\System\UrlManagement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Management\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
