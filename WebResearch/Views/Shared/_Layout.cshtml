@@ -147,13 +147,5 @@
 </div>
 
 @section scripts{
-    <script type="text/javascript">
-        require(['controllers/shared/_layout'], function (layout) {
-            layout.initialize({
-                menuDataUrl: '@Scripts.Url("~/api/test/tree")',
-                el: '#menubar'
-            });
-        });
-    </script>
-        @RenderSection("pagescripts", required:false)
+    @RenderSection("pagescripts", required:false)
 }

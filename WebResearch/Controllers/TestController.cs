@@ -20,7 +20,7 @@ namespace WebResearch.Controllers
 
         public ActionResult Tree()
         {
-            return View("Tree");
+            return PartialView("PartialTree");
         }
 
         [GET("api/test/tree")]
@@ -30,6 +30,12 @@ namespace WebResearch.Controllers
 
             Menu m1 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "菜单" };
             Menu m2 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试菜单" };
+            m2.Uri = new ACUri()
+            {
+                Uri = "test/tree",
+                UriCode = "test.tree",
+                UriDescription = "树形控件测试"
+            };
             Menu m3 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试目录一" };
             Menu m4 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项一" };
             Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项二" };

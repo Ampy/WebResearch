@@ -273,6 +273,7 @@
     <Content Include="Scripts\appContext.js" />
     <Content Include="Scripts\appRouter.js" />
     <Content Include="Scripts\Controllers\Home\index.js" />
+    <Content Include="Scripts\Controllers\Home\index1.js" />
     <Content Include="Scripts\Controllers\Shared\_Layout.js" />
     <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
@@ -400,6 +401,7 @@
     <Content Include="Scripts\Views\Shared\records.js" />
     <Content Include="Scripts\Views\Shared\sidebarItem.js" />
     <Content Include="Scripts\Views\Shared\subSidebarItem.js" />
+    <Content Include="Scripts\Views\Shared\tab.js" />
     <Content Include="Scripts\Views\Shared\table.js" />
     <Content Include="Scripts\Views\Shared\tableRow.js" />
     <Content Include="Scripts\Views\Shared\widget.js" />
@@ -472,6 +474,8 @@
     <Content Include="Views\Home\MenuPartial.cshtml" />
     <Content Include="Views\Test\Tree.cshtml" />
     <Content Include="Views\System\UrlManagement.cshtml" />
+    <Content Include="Views\Test\PartialTree.cshtml" />
+    <Content Include="Views\Home\PartialIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
