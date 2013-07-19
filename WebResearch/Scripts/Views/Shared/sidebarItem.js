@@ -62,7 +62,8 @@
                 this.model.childs().each(function (subitem, index) {
                     var subView = new sideBarItemView({
                         model: subitem,
-                        parent: context
+                        parent: context,
+                        vent: context.vent
                     });
 
                     $("#" + context.model.get("nodeid"), context.$el).append(subView.render().el);

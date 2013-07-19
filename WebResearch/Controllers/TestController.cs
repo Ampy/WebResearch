@@ -23,6 +23,11 @@ namespace WebResearch.Controllers
             return PartialView("PartialTree");
         }
 
+        public ActionResult Customer()
+        {
+            return PartialView("PartialCustomer");
+        }
+
         [GET("api/test/tree")]
         public ActionResult GetTreeData()
         {
@@ -33,11 +38,17 @@ namespace WebResearch.Controllers
             m2.Uri = new ACUri()
             {
                 Uri = "test/tree",
-                UriCode = "test.tree",
+                UriCode = "testtree",
                 UriDescription = "树形控件测试"
             };
-            Menu m3 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试目录一" };
-            Menu m4 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项一" };
+            Menu m3 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "基础数据维护" };
+            Menu m4 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "客户维护" };
+            m4.Uri = new ACUri()
+            {
+                Uri = "test/customer",
+                UriCode = "testcustomer",
+                UriDescription = "客户维护"
+            };
             Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项二" };
 
             Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试目录二" };

@@ -275,6 +275,7 @@
     <Content Include="Scripts\Controllers\Home\index.js" />
     <Content Include="Scripts\Controllers\Home\index1.js" />
     <Content Include="Scripts\Controllers\Shared\_Layout.js" />
+    <Content Include="Scripts\Controllers\Test\customer.js" />
     <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
     <Content Include="Scripts\lib\colResizable-1.3.min.js" />
@@ -475,7 +476,7 @@
     <Content Include="Views\Test\Tree.cshtml" />
     <Content Include="Views\System\UrlManagement.cshtml" />
     <Content Include="Views\Test\PartialTree.cshtml" />
-    <Content Include="Views\Home\PartialIndex.cshtml" />
+    <Content Include="Views\Test\PartialCustomer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
