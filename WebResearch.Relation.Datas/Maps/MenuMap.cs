@@ -17,8 +17,10 @@ namespace WebResearch.Relation.Datas.Maps
             Map(x => x.MenuCaption, "menucaption");
             Map(x => x.NodeName, "nodename").Nullable();
             Map(x => x.Right, "rgtvalue");
+            Map(x => x.UriCode, "uricode");
 
-            HasOne<ACUri>(x => x.Uri).Cascade.None().PropertyRef(u => u.UriCode).Not.LazyLoad();
+
+            References<ACUri>(x => x.Uri, "uricode");
 
             Table("menus");
         }

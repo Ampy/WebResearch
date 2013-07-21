@@ -2,8 +2,19 @@
 function ($, _, Backbone, tableRowView, templateHelper) {
     var tableView = Backbone.View.extend({
         columns: null,
+        formatKeyValue: function (item) {
+            var context = this;
+            var keys = _.where(this.columns, { isPrimary: true });
+
+            if (0 != keys.length) {
+                return context.getPropValue(item, keys[0].field);
+            }
+
+            return '';
+        },
         rowCount: 0,
         vent: null,
+        dlgid: null,
         getPropValue: function (item, prop) {
             for (var p in item) {
                 if (p == prop) {
@@ -15,17 +26,20 @@ function ($, _, Backbone, tableRowView, templateHelper) {
         },
         editDlgTemplateUrl: '',
         template: _.template([
-            '<div id="edtDlg"></div>',
+            '<div id="<%= dlgid %>"></div>',
             //'<div class="tablecontainer">',
                 '<div class="btn-group">',
-                    '<button id="btnAdd" class="btn btn-mini btn-primary"><i class="icon-plus"></i>添加</button>',
-                    '<button id="btnEdit" class="btn btn-mini btn-yellow"><i class="icon-eidt"></i>编辑</button>',
-                    '<button id="btnRemove" class="btn btn-mini btn-danger"><i class="icon-remove"></i>删除</button>',
+                    '<button class="btn btn-mini btn-primary btn-add"><i class="icon-plus"></i>添加</button>',
+                    '<button class="btn btn-mini btn-yellow btn-edit"><i class="icon-edit"></i>编辑</button>',
+                    '<button class="btn btn-mini btn-danger btn-remove"><i class="icon-remove"></i>删除</button>',
                 '</div>',
                 '<div class="ui-resizable" style="width:100%;height:100%">',
                     '<table class="table table-bordered table-striped table-hover table-nonfluid">',
                         '<thead>',
                             '<tr>',
+                                '<th data-op="checkbox" class="center">',
+                                    '<label><input type="checkbox"><span class="lbl"></span></label>',
+                                '</th>',
                                 '<% _.each(columns, function(c, index) { %>',
                                     '<% if(c.visible) { %>',
                                         '<% if(c.orderable) { %>',
@@ -56,7 +70,16 @@ function ($, _, Backbone, tableRowView, templateHelper) {
         ].join('')),
         events: {
             "click th[data-orderfield]": "orderChanged",
-            "click a[data-command='page'][data-page]": "pageChanged"
+            "click a[data-command='page'][data-page]": "pageChanged",
+            "click button.btn-add": "addData",
+            "click button.btn-edit": "editData",
+            "click button.btn-remove": "removeData",
+            "click th[data-op='checkbox'] :checkbox": "selectAll"
+        },
+        selectAll: function (evt) {
+            $(':checkbox[data-keyvalue]').each(function (index, item) {
+                item.checked = !item.checked;
+            });
         },
         orderChanged: function (evt) {
             var c = $(evt.target);
@@ -85,8 +108,6 @@ function ($, _, Backbone, tableRowView, templateHelper) {
             this.model.bind("change:orderby", this.render, this);
             this.model.bind("change:page", this.render, this);
             this.model.bind("change:values", this.render, this);
-
-            this.vent.bind("addCustomer", this.addCustomer, this);
         },
         render: function () {
             $(this.el).block({
@@ -95,11 +116,14 @@ function ($, _, Backbone, tableRowView, templateHelper) {
 
             var context = this;
 
+            this.dlgid = (new Date()).getTime();
+
             this.model.fetch({
                 success: function (datas) {
                     $(context.el).html(context.template({
                         columns: context.columns,
-                        pageInfo: context.model.pageInfo()
+                        pageInfo: context.model.pageInfo(),
+                        dlgid: context.dlgid
                     }));
 
                     context.rowCount = context.model.get("records").length;
@@ -122,7 +146,8 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                             table: context,
                             getPropValue: context.getPropValue,
                             columns: context.columns,
-                            rowIndex: index
+                            rowIndex: index,
+                            formatKeyValue: context.formatKeyValue
                         });
 
                         $("#tablebody", $(context.el)).append(row.render().el);
@@ -134,21 +159,20 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                         containment: ".ui-resizable"
                     });
 
-                    //$(".tablecontainer").resizable();
-
                     templateHelper.fetchTemplate(context.editDlgTemplateUrl, function (tmp) {
-                        $("#edtDlg", $(context.el)).html(tmp());
+                        $("#" + context.dlgid, $(context.el)).html(tmp({
+                            dlgid: context.dlgid
+                        }));
 
-                        $("#edtDlg").dialog({
+                        $("#" + context.dlgid).dialog({
                             autoOpen: false,
                             modal: true,
-                            width: 470,
                             buttons: {
                                 "保存": function () {
-                                    context.save();
+                                    context.vent.trigger("dialogsave", context.dlgid);
                                 },
                                 "取消": function () {
-                                    $("#edtDlg").dialog("close");
+                                    $("#" + context.dlgid).dialog("close");
                                 }
                             }
                         });
@@ -164,8 +188,9 @@ function ($, _, Backbone, tableRowView, templateHelper) {
 
             return this;
         },
-        addCustomer: function () {
-            $("#edtDlg").dialog("open");
+        addData: function () {
+            this.vent.trigger("resetform", this.dlgid);
+            $("#" + this.dlgid).dialog("open");
         }
     });
 

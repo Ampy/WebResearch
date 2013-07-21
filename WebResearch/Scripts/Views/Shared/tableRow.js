@@ -5,16 +5,18 @@
         columns: null,
         table: null,
         rowIndex: -1,
+        formatKeyValue: null,
         template: _.template([
+            '<% if(rowIndex == rowCount - 1) { %>',
+                '<td class="left bottom center">',
+            '<% } else { %>',
+                '<td class="left center">',
+            '<% } %>',
+                    '<label><input type="checkbox" data-keyvalue="<%= formatKeyValue(item) %>"><span class="lbl"></span></label>',
+                '</td>',
             '<% _.each(columns, function(c, index) { %>',
                 '<% if(c.visible) { %>',
-                    '<% if(0==index) { %>',
-                        '<% if(rowIndex == rowCount - 1) { %>',
-                            '<td class="left bottom" data-field="<%= c.field %>">',
-                        '<% } else { %>',
-                            '<td class="left" data-field="<%= c.field %>">',
-                        '<% } %>',
-                    '<% } else if(index == columns.length - 1) { %>',
+                    '<% if(index == columns.length - 1) { %>',
                         '<% if(rowIndex == rowCount - 1) { %>',
                             '<td class="right bottom" data-field="<%= c.field %>">',
                         '<% } else { %>',
@@ -27,8 +29,8 @@
                             '<td data-field="<%= c.field %>">',
                         '<% } %>',
                     '<% } %>',
-                            '<div class="table-cell table-cell-nowrap"><%= getPropValue(item, c.field) %></div>',
-                    '</td>',
+                                '<div class="table-cell table-cell-nowrap"><%= getPropValue(item, c.field) %></div>',
+                            '</td>',
                 '<% } %>',
             '<% }) %>'
         ].join('')),
@@ -41,7 +43,8 @@
                 getPropValue: this.getPropValue,
                 item: this.model,
                 rowIndex: this.rowIndex,
-                rowCount: this.table.rowCount
+                rowCount: this.table.rowCount,
+                formatKeyValue: this.formatKeyValue
             }));
 
             return this;

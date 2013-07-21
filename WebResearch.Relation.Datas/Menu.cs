@@ -19,11 +19,21 @@ namespace WebResearch.Relation.Datas
             set { menuCaption = value; }
         }
 
+        private string uriCode;
+
+        public virtual string UriCode
+        {
+            get { return uriCode; }
+            set { uriCode = value; }
+        }
+
         public override object Clone()
         {
             Menu m = base.Clone() as Menu;
 
             m.MenuCaption = menuCaption;
+            m.uriCode = uriCode;
+
             return m;
         }
 

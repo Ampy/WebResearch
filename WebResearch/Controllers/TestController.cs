@@ -51,9 +51,32 @@ namespace WebResearch.Controllers
             };
             Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项二" };
 
-            Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试目录二" };
-            Menu m7 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项三" };
-            Menu m8 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项三四" };
+            Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库维护" };
+
+            Menu m7 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库管理" };
+            Menu m10 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库创建" };
+            m10.Uri = new ACUri()
+            {
+                Uri = "InstallDB",
+                UriCode = "installdb",
+                UriDescription = "安装数据库"
+            };
+
+            Menu m8 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "初始化数据" };
+            m8.Uri = new ACUri()
+            {
+                Uri = "InstallDB/InitialData",
+                UriCode = "initialdata",
+                UriDescription = "初始化数据"
+            };
+
+            Menu m9 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "删除数据库" };
+            m9.Uri = new ACUri()
+            {
+                Uri = "InstallDB/DeleteDB",
+                UriCode = "deletedb",
+                UriDescription = "删除数据库"
+            };
 
             tree.AddNode("", m1);
             tree.AddNode(m1, m2);
@@ -63,7 +86,10 @@ namespace WebResearch.Controllers
 
             tree.AddNode(m1, m6);
             tree.AddNode(m6, m7);
-            tree.AddNode(m7, m8);
+            tree.AddNode(m7, m9);
+            tree.AddNode(m7, m10);
+
+            tree.AddNode(m6, m8);
 
             return Json(tree);
         }

@@ -15,7 +15,7 @@ using WebResearch.Relation.Datas;
 
 namespace WebResearch.Controllers
 {
-    public class InstallDBController : Controller
+    public class InstallDBController : JsonController
     {
         private ISessionFactory CreateSessionFactory()
         {
@@ -55,7 +55,7 @@ namespace WebResearch.Controllers
                 }
             }
 
-            return View();
+            return PartialView("PartialIndex");
         }
 
         public ActionResult InitialData()
@@ -155,8 +155,26 @@ namespace WebResearch.Controllers
                 }
             }
 
-            return View("index");
+            return PartialView("ParitalIndex");
         }
 
+        public ActionResult DeleteDB()
+        {
+            try
+            {
+                if (!System.IO.File.Exists(Path.Combine(base.Server.MapPath("~/App_Data"), "webresearch.db3")))
+                {
+                    System.IO.File.Delete(Path.Combine(base.Server.MapPath("~/App_Data"), "webresearch.db3"));
+                }
+
+                ViewBag.message = "数据库成功删除";
+            }
+            catch (Exception eX)
+            {
+                ViewBag.message = eX.Message;
+            }
+
+            return PartialView("PartialIndex");
+        }
     }
 }

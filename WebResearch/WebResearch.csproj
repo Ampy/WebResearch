@@ -477,6 +477,7 @@
     <Content Include="Views\System\UrlManagement.cshtml" />
     <Content Include="Views\Test\PartialTree.cshtml" />
     <Content Include="Views\Test\PartialCustomer.cshtml" />
+    <Content Include="Views\InstallDB\PartialIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

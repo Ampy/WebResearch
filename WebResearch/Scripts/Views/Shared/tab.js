@@ -59,8 +59,6 @@
                 var id = $(link).data("uricode");
                 var uri = $(link).data("uri");
 
-                console.log($(this.tabID + ' a[href="' + uri + '"]'));
-
                 if (0 == $(this.tabID + ' a[href="' + uri + '"]').length) {
                     var tabindex = "ui-tabs-" + this.tabIndex;
                     this.tabIndex += 1;

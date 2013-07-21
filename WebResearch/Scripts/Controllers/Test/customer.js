@@ -24,7 +24,7 @@ function ($, Backbone, _, Router, global, pageContext, widget, records, tableRow
                 vent: pageContext.current().vent,
                 editDlgTemplateUrl: options.customerDlgUrl,
                 columns: [
-                    { caption: "客户编号", field: "custNo", visible: true, width: '144' },
+                    { caption: "客户编号", field: "custNo", visible: true, width: '144', isPrimary: true },
                     { caption: "客户名称", field: "custName", visible: true, orderable: true, width: '144' },
                     { caption: "街道", field: "street", visible: true, orderable: true, width: '144' },
                     { caption: "城市", field: "city", visible: true, orderable: true, width: '144' },
