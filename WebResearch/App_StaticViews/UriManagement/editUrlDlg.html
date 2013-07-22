@@ -21,7 +21,7 @@
     </div>
 </form>
 <script type="text/javascript">
-    require(['appcontext', 'jquery', 'json2'], function (pagecontext, $) {
+    require(['appcontext', 'jquery', 'messagebox', 'json2'], function (pagecontext, $, messageBox) {
         var currentFormID = '<%= formid %>';
         var currentMode = "add";
         var currentTarget = null;
@@ -53,7 +53,7 @@
                                 });
                             }
                             else {
-                                alert("找不到要编辑的对象");
+                                messageBox.alert("找不到要编辑的对象");
                             }
                         }
                         break;
@@ -73,7 +73,7 @@
                             url: 'api/uri/' + newObj['uriCode'],
                             dataType: 'json',
                             success: function (data, status, xhr) {
-                                alert("已经存在相同的Uri代码");
+                                messageBox.info("已经存在相同的Uri代码");
                             },
                             error: function (xhr, status, err) {
                                 $.ajax({
@@ -85,13 +85,15 @@
                                     dataType: 'text',
                                     contentType: "application/json; charset=utf-8",
                                     success: function (data, textStatus, xhr) {
-                                        if (!confirm(data + ",是否继续添加？")) {
-                                            $("#" + dlgid).dialog("close");
-                                            pagecontext.current().vent.trigger("refreshtable", currentFormID, null);
-                                        }
+                                        messageBox.confirm(data + ",是否继续添加？", function (result) {
+                                            if (!result) {
+                                                $("#" + dlgid).dialog("close");
+                                                pagecontext.current().vent.trigger("refreshtable", currentFormID, null);
+                                            }
+                                        })
                                     },
                                     error: function (xhr, textStatus, err) {
-                                        alert(xhr.responseText);
+                                        messageBox.error(xhr.responseText);
                                     }
                                 });
                             }
@@ -122,16 +124,37 @@
                                         $("#" + dlgid).dialog("close");
                                     },
                                     error: function (xhr, textStatus, err) {
-                                        alert(xhr.responseText);
+                                        messageBox.error(xhr.responseText);
                                     }
                                 });
                             },
                             error: function (xhr, status, err) {
-                                alert("当前编辑的对象不存在，可能已经被删除");
+                                messageBox.error("当前编辑的对象不存在，可能已经被删除");
                             }
                         });
                         break;
                 }
+            }
+        });
+
+        pagecontext.current().vent.bind("deletedata", function (formid, targets) {
+            if (currentFormID == formid) {
+                $.ajax({
+                    url: 'api/uri/delete',
+                    dataType: 'JSON',
+                    type: 'POST',
+                    data: JSON.stringify({
+                        delobjs: targets
+                    }),
+                    success: function (data, textStatus, xhr) {
+                        messageBox.info("删除成功");
+
+                        pagecontext.current().vent.trigger("refreshtable", currentFormID, currentTarget);
+                    },
+                    error: function (xhr, textStatus, err) {
+                        messageBox.error(xhr.responseText);
+                    }
+                });
             }
         });
     });

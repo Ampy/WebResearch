@@ -1,5 +1,5 @@
-﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'hashtable', 'blockui', 'jqueryui', 'colresizable'],
-function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
+﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'hashtable', 'messagebox', 'blockui', 'jqueryui', 'colresizable'],
+function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox) {
     var tableView = Backbone.View.extend({
         columns: null,
         rows: null,
@@ -35,6 +35,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
                     '<button class="btn btn-mini btn-primary btn-add"><i class="icon-plus"></i>添加</button>',
                     '<button class="btn btn-mini btn-yellow btn-edit"><i class="icon-edit"></i>编辑</button>',
                     '<button class="btn btn-mini btn-danger btn-remove"><i class="icon-remove"></i>删除</button>',
+                    '<button class="btn btn-mini btn-info btn-refresh"><i class="icon-refresh"></i>刷新</button>',
                 '</div>',
                 '<div class="ui-resizable" style="width:100%;height:100%">',
                     '<table class="table table-bordered table-striped table-hover table-nonfluid">',
@@ -77,6 +78,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
             "click button.btn-add": "addData",
             "click button.btn-edit": "editData",
             "click button.btn-remove": "removeData",
+            "click button.btn-refresh": "refreshByHand",
             "click th[data-op='checkbox'] :checkbox": "selectAll"
         },
         selectAll: function (evt) {
@@ -131,7 +133,12 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
                 }
             }
         },
+        refreshByHand: function(evt){
+            this.render();
+        },
         render: function () {
+            $(this.el).html('');
+
             $(this.el).block({
                 message: "正在加载数据……"
             });
@@ -143,6 +150,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
             this.dlgid = (new Date()).getTime();
 
             this.model.fetch({
+                cache: false,
                 success: function (datas) {
                     $(context.el).html(context.template({
                         columns: context.columns,
@@ -224,7 +232,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
             var checkedBox =  $(':checkbox[data-keyvalue]:checked');
             if (0 != checkedBox.length) {
                 if (1 != checkedBox.length) {
-                    alert("只能选择一条数据进行编辑");
+                    messageBox.alert("只能选择一条数据进行编辑");
                 }
                 else {
                     this.currentEdit = $(checkedBox[0]).data("keyvalue");
@@ -233,7 +241,29 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
                 }
             }
             else {
-                alert("请选择一条数据进行编辑");
+                messageBox.alert("请选择一条数据进行编辑");
+            }
+        },
+        removeData: function () {
+            var context = this;
+            var checkedBox = $(':checkbox[data-keyvalue]:checked');
+            if (0 == checkedBox.length) {
+                messageBox.alert("请选择数据用于删除");
+            }
+            else {
+                messageBox.confirm("您确定要删除选择的数据？", function (result) {
+                    if (result) {
+                        var deleteTargets = new Array();
+                        checkedBox.each(function (index, item) {
+                            deleteTargets[index] = $(item).data("keyvalue");
+                        });
+
+                        context.vent.trigger("deletedata", context.dlgformid, deleteTargets);
+                    }
+                    else {
+                        $("#" + context.dlgid).dialog("close");
+                    }
+                });
             }
         }
     });

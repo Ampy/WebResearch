@@ -11,7 +11,8 @@
         quantumcodee: 'lib/quantumcode-elements',
         colresizable: 'lib/colResizable-1.3.min',
         jqbrowser: 'lib/jqBrowser',
-        hashtable: 'lib/hashtable'
+        hashtable: 'lib/hashtable',
+        bootbox: 'lib/bootbox.min'
     },
     shim: {
         'underscore': {
@@ -47,6 +48,10 @@
         },
         'hashtable': {
             exports: 'Hashtable'
+        },
+        'bootbox': {
+            deps: ['bootstrap'],
+            exports: 'bootbox'
         }
     },
     urlArgs: "bust=" + (new Date()).getTime()

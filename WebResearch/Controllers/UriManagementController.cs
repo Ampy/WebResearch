@@ -172,5 +172,31 @@ namespace WebResearch.Controllers
                 }
             }
         }
+
+        [POST("api/uri/delete")]
+        public ActionResult Delete(IList<string> delobjs){
+            using (ISession session = DBSession.Current.CreateSession())
+            {
+                ITransaction trans = null;
+
+                try
+                {
+                    trans = session.BeginTransaction();
+                    foreach (string uriCode in delobjs)
+                    {
+                        session.Delete(session.Get<ACUri>(uriCode));
+                    }
+                    trans.Commit();
+                    session.Close();
+                    return Content("删除成功");
+                }
+                catch (Exception eX)
+                {
+                    if (null != trans)
+                        trans.Rollback();
+                    return ErrorContent(eX.Message);
+                }
+            }
+        }
     }
 }

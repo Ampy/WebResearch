@@ -6,7 +6,7 @@
             tabIndex: 1,
             tabTemplate: [
                 "<li class='ui-state-default ui-corner-top ui-tabs-active ui-state-active' tabindex='#{index}' role='tab' aria-controls='#{id}' aria-labelledby='#{tabindex}' aria-selected='false'>",
-                    "<a id='#{tabindex}' class='ui-tabs-anchor' href='#{href}' role='presentation'>#{label}</a>",
+                    "<a id='#{tabindex}' class='ui-tabs-anchor' href='#{href}' data-href='#{href}' role='presentation'>#{label}</a>",
                     "<span class='ui-icon ui-icon-close' role='presentation'>关闭</span>",
                 "</li>"].join(""),
             contentTemplate: [
@@ -59,7 +59,9 @@
                 var id = $(link).data("uricode");
                 var uri = $(link).data("uri");
 
-                if (0 == $(this.tabID + ' a[href="' + uri + '"]').length) {
+                var oldTab = $('a[data-href="' + uri + '"]', this.tabID);
+
+                if ("" == oldTab.text()) {
                     var tabindex = "ui-tabs-" + this.tabIndex;
                     this.tabIndex += 1;
                     var li = $(this.tabTemplate.replace(/#\{href\}/g, uri).replace(/#\{label\}/g, $(link).html())
@@ -71,7 +73,7 @@
                     this.currentTab.tabs("refresh");
                 }
 
-                var index = $(this.tabID + ' a[href="' + uri + '"]').parent().index();
+                var index = $(this.tabID + ' a[data-href="' + uri + '"]').parent().index();
                 this.currentTab.tabs("option", "active", index);
             }
         });
