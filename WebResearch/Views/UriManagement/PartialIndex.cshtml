@@ -1,0 +1,17 @@
+﻿<div class="row-fluid">
+    <div class="span12">
+        <div class="row-fluid">
+            <div class="span12 widget-container-span"  id="uriList"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    require(['controllers/system/urimanagement'], function (page) {
+        page.initialize({
+            tableel: 'uriList',
+            apiUrl: '@Scripts.Url("~/api/uri")',
+            editDlgTemplateUrl: '@Scripts.Url("~/App_StaticViews/UriManagement/editUrlDlg.html")'
+        });
+    });
+</script>

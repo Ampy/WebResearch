@@ -242,6 +242,7 @@
     <Compile Include="Controllers\InstallDBController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\UriManagementController.cs" />
     <Compile Include="DAL\MenuDAL.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -255,6 +256,7 @@
   <ItemGroup>
     <Content Include="App_StaticViews\editCustomerDlg.html" />
     <Content Include="App_StaticViews\editMenuDlg.html" />
+    <Content Include="App_StaticViews\UriManagement\editUrlDlg.html" />
     <Content Include="Content\quantumcode.min.css" />
     <Content Include="Content\tree.css" />
     <Content Include="Images\empty.gif" />
@@ -275,6 +277,7 @@
     <Content Include="Scripts\Controllers\Home\index.js" />
     <Content Include="Scripts\Controllers\Home\index1.js" />
     <Content Include="Scripts\Controllers\Shared\_Layout.js" />
+    <Content Include="Scripts\Controllers\System\uriManagement.js" />
     <Content Include="Scripts\Controllers\Test\customer.js" />
     <Content Include="Scripts\Controllers\Test\tree.js" />
     <Content Include="Scripts\global.js" />
@@ -474,7 +477,7 @@
     <Content Include="Views\InstallDB\index.cshtml" />
     <Content Include="Views\Home\MenuPartial.cshtml" />
     <Content Include="Views\Test\Tree.cshtml" />
-    <Content Include="Views\System\UrlManagement.cshtml" />
+    <Content Include="Views\UriManagement\PartialIndex.cshtml" />
     <Content Include="Views\Test\PartialTree.cshtml" />
     <Content Include="Views\Test\PartialCustomer.cshtml" />
     <Content Include="Views\InstallDB\PartialIndex.cshtml" />
@@ -482,6 +485,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Management\" />
+    <Folder Include="Views\System\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

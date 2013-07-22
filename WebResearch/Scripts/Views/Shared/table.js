@@ -1,7 +1,8 @@
-﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'blockui', 'jqueryui', 'colresizable'],
-function ($, _, Backbone, tableRowView, templateHelper) {
+﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'hashtable', 'blockui', 'jqueryui', 'colresizable'],
+function ($, _, Backbone, tableRowView, templateHelper, Hashtable) {
     var tableView = Backbone.View.extend({
         columns: null,
+        rows: null,
         formatKeyValue: function (item) {
             var context = this;
             var keys = _.where(this.columns, { isPrimary: true });
@@ -15,6 +16,8 @@ function ($, _, Backbone, tableRowView, templateHelper) {
         rowCount: 0,
         vent: null,
         dlgid: null,
+        dlgformid: null,
+        currentEdit: null,
         getPropValue: function (item, prop) {
             for (var p in item) {
                 if (p == prop) {
@@ -94,6 +97,9 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                 if (this.model.get("order") == "asc") {
                     this.model.set("order", "desc");
                 }
+                else {
+                    this.model.set("order", "asc");
+                }
             }
         },
         pageChanged: function (evt) {
@@ -108,6 +114,22 @@ function ($, _, Backbone, tableRowView, templateHelper) {
             this.model.bind("change:orderby", this.render, this);
             this.model.bind("change:page", this.render, this);
             this.model.bind("change:values", this.render, this);
+
+            this.vent.bind("refreshtable", this.refreshTable, this);
+
+            this.rows = new Hashtable();
+        },
+        refreshTable: function(formid, target){
+            if (this.dlgformid == formid) {
+                if (null == target) {
+                    this.render();
+                }
+                else {
+                    if (this.formatKeyValue(target) == this.currentEdit) {
+                        this.rows.get(this.currentEdit).refresh();
+                    }
+                }
+            }
         },
         render: function () {
             $(this.el).block({
@@ -115,6 +137,8 @@ function ($, _, Backbone, tableRowView, templateHelper) {
             });
 
             var context = this;
+
+            this.rows.clear();
 
             this.dlgid = (new Date()).getTime();
 
@@ -150,6 +174,8 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                             formatKeyValue: context.formatKeyValue
                         });
 
+                        context.rows.put(context.formatKeyValue(data), row);
+
                         $("#tablebody", $(context.el)).append(row.render().el);
                     });
 
@@ -159,9 +185,11 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                         containment: ".ui-resizable"
                     });
 
+                    context.dlgformid = (new Date()).getTime();
+
                     templateHelper.fetchTemplate(context.editDlgTemplateUrl, function (tmp) {
                         $("#" + context.dlgid, $(context.el)).html(tmp({
-                            dlgid: context.dlgid
+                            formid: context.dlgformid
                         }));
 
                         $("#" + context.dlgid).dialog({
@@ -169,7 +197,7 @@ function ($, _, Backbone, tableRowView, templateHelper) {
                             modal: true,
                             buttons: {
                                 "保存": function () {
-                                    context.vent.trigger("dialogsave", context.dlgid);
+                                    context.vent.trigger("dialogsave", context.dlgformid, context.dlgid);
                                 },
                                 "取消": function () {
                                     $("#" + context.dlgid).dialog("close");
@@ -189,8 +217,24 @@ function ($, _, Backbone, tableRowView, templateHelper) {
             return this;
         },
         addData: function () {
-            this.vent.trigger("resetform", this.dlgid);
+            this.vent.trigger("resetform", this.dlgformid, "add", null);
             $("#" + this.dlgid).dialog("open");
+        },
+        editData: function () {
+            var checkedBox =  $(':checkbox[data-keyvalue]:checked');
+            if (0 != checkedBox.length) {
+                if (1 != checkedBox.length) {
+                    alert("只能选择一条数据进行编辑");
+                }
+                else {
+                    this.currentEdit = $(checkedBox[0]).data("keyvalue");
+                    this.vent.trigger("resetform", this.dlgformid, "edit", this.rows.get(this.currentEdit).model);
+                    $("#" + this.dlgid).dialog("open");
+                }
+            }
+            else {
+                alert("请选择一条数据进行编辑");
+            }
         }
     });
 

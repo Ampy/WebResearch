@@ -48,6 +48,9 @@
             }));
 
             return this;
+        },
+        refresh: function () {
+            this.render();
         }
     });
 

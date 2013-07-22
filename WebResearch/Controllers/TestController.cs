@@ -49,7 +49,13 @@ namespace WebResearch.Controllers
                 UriCode = "testcustomer",
                 UriDescription = "客户维护"
             };
-            Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试子项二" };
+            Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "Uri维护" };
+            m5.Uri = new ACUri()
+            {
+                Uri = "urimanagement",
+                UriCode = "urimanagement",
+                UriDescription = "Uri维护"
+            };
 
             Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库维护" };
 

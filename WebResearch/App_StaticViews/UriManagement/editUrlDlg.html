@@ -1,0 +1,138 @@
+﻿<form id="<%= formid %>">
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="row-fluid">
+                <div class="span5">
+                    <label>Uri代码</label>
+                    <input data-bindingfield="uriCode" class="span12" data-keyfield="true"/>
+                </div>
+                <div class="span5 offset1">
+                    <label>Uri</label>
+                    <input data-bindingfield="uri" class="span12" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span11">
+                    <label>Uri描述</label>
+                    <input data-bindingfield="uriDescription" class="span12" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    require(['appcontext', 'jquery', 'json2'], function (pagecontext, $) {
+        var currentFormID = '<%= formid %>';
+        var currentMode = "add";
+        var currentTarget = null;
+        pagecontext.current().vent.bind("resetform", function (formid, mode, target) {
+            if (currentFormID == formid) {
+                currentMode = mode;
+                currentTarget = target;
+                switch (mode) {
+                    case "add":
+                        if (currentFormID == formid) {
+                            $('[data-bindingfield]', 'form[id="<%= formid %>"]').each(function (index, c) {
+                                $(c).val('');
+                            });
+
+                            $('[data-keyfield]', 'form[id="<%= formid %>"]').each(function (index, c) {
+                                $(c).removeAttr("readonly");
+                            });
+                        }
+                        break;
+                    case "edit":
+                        if (currentFormID == formid) {
+                            if (null != target) {
+                                $('[data-bindingfield]', 'form[id="<%= formid %>"]').each(function (index, c) {
+                                    $(c).val(target[$(c).data("bindingfield")]);
+                                });
+
+                                $('[data-keyfield]', 'form[id="<%= formid %>"]').each(function (index, c) {
+                                    $(c).attr("readonly", "true");
+                                });
+                            }
+                            else {
+                                alert("找不到要编辑的对象");
+                            }
+                        }
+                        break;
+                }
+            }
+        });
+
+        pagecontext.current().vent.bind("dialogsave", function (formid, dlgid) {
+            if (currentFormID == formid) {
+                switch (currentMode) {
+                    case "add":
+                        var newObj = new Object();
+                        $("[data-bindingfield]").each(function (index, c) {
+                            newObj[$(c).data("bindingfield")] = $(c).val();
+                        });
+                        $.ajax({
+                            url: 'api/uri/' + newObj['uriCode'],
+                            dataType: 'json',
+                            success: function (data, status, xhr) {
+                                alert("已经存在相同的Uri代码");
+                            },
+                            error: function (xhr, status, err) {
+                                $.ajax({
+                                    url: 'api/uri/save',
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        'uri': newObj
+                                    }),
+                                    dataType: 'text',
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data, textStatus, xhr) {
+                                        if (!confirm(data + ",是否继续添加？")) {
+                                            $("#" + dlgid).dialog("close");
+                                            pagecontext.current().vent.trigger("refreshtable", currentFormID, null);
+                                        }
+                                    },
+                                    error: function (xhr, textStatus, err) {
+                                        alert(xhr.responseText);
+                                    }
+                                });
+                            }
+                        });
+                        break;
+                    case "edit":
+                        var updObj = new Object();
+                        $("[data-bindingfield]").each(function (index, c) {
+                            updObj[$(c).data("bindingfield")] = $(c).val();
+                        });
+                        $.ajax({
+                            url: 'api/uri/' + currentTarget['uriCode'],
+                            dataType: 'json',
+                            success: function (data, status, xhr) {
+                                $.ajax({
+                                    url: 'api/uri/update',
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        'uri': updObj
+                                    }),
+                                    dataType: 'text',
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data, textStatus, xhr) {
+                                        $("[data-bindingfield]").each(function (index, c) {
+                                            currentTarget[$(c).data("bindingfield")] = $(c).val();
+                                        });
+                                        pagecontext.current().vent.trigger("refreshtable", currentFormID, currentTarget);
+                                        $("#" + dlgid).dialog("close");
+                                    },
+                                    error: function (xhr, textStatus, err) {
+                                        alert(xhr.responseText);
+                                    }
+                                });
+                            },
+                            error: function (xhr, status, err) {
+                                alert("当前编辑的对象不存在，可能已经被删除");
+                            }
+                        });
+                        break;
+                }
+            }
+        });
+    });
+</script>
