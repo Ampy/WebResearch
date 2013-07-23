@@ -1,4 +1,4 @@
-﻿define(['jquery', 'underscore', 'backbone', 'jqueryui'],
+﻿define(['jquery', 'underscore', 'backbone', 'jqueryui', 'blockui'],
     function ($, _, Backbone) {
         var tabView = Backbone.View.extend({
             tagName: 'ul',

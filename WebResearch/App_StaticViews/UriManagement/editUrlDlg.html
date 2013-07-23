@@ -87,8 +87,8 @@
                                     success: function (data, textStatus, xhr) {
                                         messageBox.confirm(data + ",是否继续添加？", function (result) {
                                             if (!result) {
-                                                $("#" + dlgid).dialog("close");
                                                 pagecontext.current().vent.trigger("refreshtable", currentFormID, null);
+                                                $("#" + dlgid).dialog("close");
                                             }
                                         })
                                     },
@@ -141,15 +141,14 @@
             if (currentFormID == formid) {
                 $.ajax({
                     url: 'api/uri/delete',
-                    dataType: 'JSON',
+                    dataType: 'text',
                     type: 'POST',
-                    data: JSON.stringify({
+                    traditional: true,
+                    data: {
                         delobjs: targets
-                    }),
+                    },
                     success: function (data, textStatus, xhr) {
-                        messageBox.info("删除成功");
-
-                        pagecontext.current().vent.trigger("refreshtable", currentFormID, currentTarget);
+                        pagecontext.current().vent.trigger("refreshtable", currentFormID, null);
                     },
                     error: function (xhr, textStatus, err) {
                         messageBox.error(xhr.responseText);

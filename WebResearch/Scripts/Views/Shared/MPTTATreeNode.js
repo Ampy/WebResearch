@@ -188,11 +188,11 @@
                 if(isSelected)
                 {
                     this.model.set({ "selected": false });
-                    this.vent.trigger("nodeselected", "");
+                    this.vent.trigger("nodeselected", null);
                 }
                 else{
                     this.model.set({ "selected": true });
-                    this.vent.trigger("nodeselected", this.model.get("nodeid"));
+                    this.vent.trigger("nodeselected", this.model);
                 }
             },
             toggleClick: function(ev){

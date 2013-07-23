@@ -230,7 +230,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common\CustomPrincipal.cs" />
     <Compile Include="Common\CustomPrincipalModel.cs" />
-    <Compile Include="Common\DBSession.cs" />
     <Compile Include="Common\extensions.cs" />
     <Compile Include="Common\ICustomPrincipal.cs" />
     <Compile Include="Common\Menu.cs" />
@@ -259,6 +258,7 @@
     <Content Include="App_StaticViews\UriManagement\editUrlDlg.html" />
     <Content Include="Content\quantumcode.min.css" />
     <Content Include="Content\tree.css" />
+    <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\empty.gif" />
     <Content Include="Images\folder.gif" />
     <Content Include="Images\folderopen.gif" />
@@ -493,6 +493,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebResearch.NHibernateSession\WebResearch.NHibernateSession.csproj">
+      <Project>{2bb548fe-2d46-45d3-837c-ce8a9beea9b7}</Project>
+      <Name>WebResearch.NHibernateSession</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebResearch.Relation.Datas\WebResearch.Relation.Datas.csproj">
       <Project>{9065f8b8-337b-411e-9336-0baa6ad420e9}</Project>
       <Name>WebResearch.Relation.Datas</Name>

@@ -121,7 +121,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox) {
 
             this.rows = new Hashtable();
         },
-        refreshTable: function(formid, target){
+        refreshTable: function (formid, target) {
             if (this.dlgformid == formid) {
                 if (null == target) {
                     this.render();
@@ -216,9 +216,9 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox) {
 
                     $(context.el).unblock();
                 },
-                error: function (model, response, option) {
+                error: function (model, xhr, option) {
                     $(context.el).unblock();
-                    alert(response);
+                    messageBox.error(xhr.responseText);
                 }
             });
 

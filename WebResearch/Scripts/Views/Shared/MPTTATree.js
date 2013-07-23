@@ -2,7 +2,25 @@
     function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper) {
         var MPTTATreeView = Backbone.View.extend({
             template: _.template([
-                '<div id="<%= dlgid %>"></div>'
+                '<div id="<%= dlgid %>"></div>',
+                '<% if(editing) { %>',
+                    '<div class="btn-toolbar">',
+                        '<div class="btn-group">',
+                            '<button class="btn btn-mini btn-primary btn-add"><i class="icon-plus"></i>添加子节点</button>',
+                            '<button class="btn btn-mini btn-yellow btn-edit"><i class="icon-edit"></i>编辑节点</button>',
+                            '<button class="btn btn-mini btn-danger btn-remove"><i class="icon-remove"></i>删除节点</button>',
+                        '</div>',
+                        '<div class="btn-group">',
+                            '<button class="btn btn-mini btn-info btn-refresh"><i class="icon-refresh"></i>刷新</button>',
+                        '</div>',
+                        '<div class="btn-group">',
+                            '<button class="btn btn-mini btn-info btn-uplevel"><i class="icon-double-angle-up"></i>上移一级</button>',
+                            '<button class="btn btn-mini btn-info btn-up"><i class="icon-chevron-up"></i>上移</button>',
+                            '<button class="btn btn-mini btn-info btn-down"><i class="icon-chevron-down"></i>下移</button>',
+                            '<button class="btn btn-mini btn-info btn-downlevel"><i class="icon-double-angle-down"></i>下移一级</button>',
+                        '</div>',
+                    '</div>',
+                '<% } %>'
             ].join('')),
             editorTemplateUrl: '',
             dlgid: '',
@@ -11,7 +29,7 @@
             vent: null,
             imgUrl: '',
             treeNodes: null,
-            selectedNodeId: null,
+            selectedNode: null,
             modelFactory: function () { },
             currentMode: 'view',
             initialize: function (options) {
@@ -45,8 +63,11 @@
                 this.dlgid = (new Date()).getTime();
 
                 $(this.el).html(this.template({
-                    dlgid: this.dlgid
+                    dlgid: this.dlgid,
+                    editing: context.editable
                 }));
+
+                this.disableAllButton();
 
                 $(this.el).addClass(this.options.spanclass);
 
@@ -69,16 +90,16 @@
                                             $("[data-bindingfield]").each(function (index, c) {
                                                 newNode.set($(c).data("bindingfield"), $(c).val());
                                             });
-                                            context.model.addNodeByParentID(newNode, context.selectedNodeId);
-                                            context.vent.trigger("refresh", context.selectedNodeId);
+                                            context.model.addNodeByParentID(newNode, context.selectedNode.get("nodeid"));
+                                            context.vent.trigger("refresh", context.selectedNode.get("nodeid"));
                                             $("#" + context.dlgid).dialog("close");
                                             break;
                                         case "editing":
-                                            var editNode = context.model.getNode(context.selectedNodeId);
+                                            var editNode = context.model.getNode(context.selectedNode.get("nodeid"));
                                             $("[data-bindingfield]").each(function (index, c) {
                                                 editNode.set($(c).data("bindingfield"), $(c).val());
                                             });
-                                            context.vent.trigger("refresh", context.selectedNodeId);
+                                            context.vent.trigger("refresh", context.selectedNode.get("nodeid"));
                                             $("#" + context.dlgid).dialog("close");
                                             break;
                                     }
@@ -109,9 +130,8 @@
             },
             editingNode: function(){
                 this.currentMode = 'editing';
-                if (null != this.selectedNodeId &&
-                    '' != this.selectedNodeId) {
-                    var editNode = this.model.getNode(this.selectedNodeId);
+                if (null != this.selectedNode) {
+                    var editNode = this.selectedNode;
                     $("[data-bindingfield]").each(function (index, c) {
                         $(c).val(editNode.get($(c).data("bindingfield")));
                     });
@@ -126,8 +146,36 @@
                 this.vent.trigger("resetform", this.dlgformid);
                 $("#" + this.dlgid).dialog("open");
             },
-            nodeSelected: function(nodeid){
-                this.selectedNodeId = nodeid;
+            nodeSelected: function(node){
+                this.selectedNode = node;
+                this.disableAllButton();
+
+                if (null != this.selectedNode) {
+                    $("button.btn-add").removeAttr("disabled");
+                    $("button.btn-edit").removeAttr("disabled");
+                    
+                    if (!this.selectedNode.isRoot() && this.selectedNode.isFirst()) {
+                        $("button.btn-down").removeAttr("disabled");
+                        $("button.btn-downlevel").removeAttr("disabled");
+                        if (!this.selectedNode.parent().isRoot()) {
+                            $("button.btn-uplevel").removeAttr("disabled");
+                        }
+                    } else if (!this.selectedNode.isRoot() && this.selectedNode.isLast()) {
+                        $("button.btn-up").removeAttr("disabled");
+                        $("button.btn-uplevel").removeAttr("disabled");
+                    } else if (!this.selectedNode.isRoot() && !this.selectedNode.isFirst() && !this.selectedNode.isLast()) {
+                        $("button.btn-down").removeAttr("disabled");
+                        $("button.btn-downlevel").removeAttr("disabled");
+                        $("button.btn-up").removeAttr("disabled");
+                        $("button.btn-uplevel").removeAttr("disabled");
+                    }
+                }
+            },
+            disableAllButton: function(){
+                $("button", this.$el).each(function (index, b) {
+                    if (!$(b).hasClass("btn-refresh"))
+                        $(b).attr("disabled", true);
+                });
             },
             refreshTree: function () {
                 this.treeNodes.each(function (key, value) {
