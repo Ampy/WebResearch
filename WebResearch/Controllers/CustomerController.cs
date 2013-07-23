@@ -8,6 +8,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using WebResearch.Common;
 using WebResearch.Relation.Datas;
+using WebResearch.NHibernateSession;
 
 namespace WebResearch.Controllers
 {
@@ -26,8 +27,9 @@ namespace WebResearch.Controllers
         [GET("api/customer/{startRow}/{rows}/{orderby?}/{order?}")]
         public ActionResult All(int startRow, int rows, string orderby, string order)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 try
                 {
                     PagingRecord retRecord = new PagingRecord();
@@ -75,18 +77,15 @@ namespace WebResearch.Controllers
                 {
                     return ErrorContent(eX.Message);
                 }
-                finally
-                {
-                    session.Close();
-                }
             }
         }
 
         [GET("api/customer/{id}")]
         public ActionResult Single(int id)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 try
                 {
                     Customer_reltab retValue = session.Get<Customer_reltab>(id);
@@ -96,10 +95,6 @@ namespace WebResearch.Controllers
                 catch (Exception eX)
                 {
                     return ErrorContent(eX.Message);
-                }
-                finally
-                {
-                    session.Close();
                 }
             }
         }

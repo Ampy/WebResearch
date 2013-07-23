@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebResearch.Common;
+using WebResearch.NHibernateSession;
 using WebResearch.Relation.Datas;
 
 namespace WebResearch.Controllers
@@ -24,8 +25,9 @@ namespace WebResearch.Controllers
         [GET("api/uri/{startRow}/{rows}/{orderby?}/{order?}")]
         public ActionResult All(int startRow, int rows, string orderby, string order)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 try
                 {
                     PagingRecord retRecord = new PagingRecord();
@@ -69,18 +71,15 @@ namespace WebResearch.Controllers
                 {
                     return ErrorContent(eX.Message);
                 }
-                finally
-                {
-                    session.Close();
-                }
             }
         }
 
         [GET("api/uri/{uriCode}")]
         public ActionResult GetUri(string uriCode)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 try
                 {
                     ACUri retValue = session.Get<ACUri>(uriCode);
@@ -96,35 +95,26 @@ namespace WebResearch.Controllers
                 {
                     return ErrorContent(eX.Message);
                 }
-                finally
-                {
-                    session.Close();
-                }
             }
         }
 
         [POST("api/uri/save")]
         public ActionResult Save(ACUri uri)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 ACUri oldUri = session.Get<ACUri>(uri.UriCode);
-
-                ITransaction trans = null;
 
                 if (null == oldUri)
                 {
                     try
                     {
-                        trans = session.BeginTransaction();
                         session.Save(uri);
-
-                        trans.Commit();
                     }
                     catch (Exception eX)
                     {
-                        if (null != trans)
-                            trans.Rollback();
+                        db.Rollback = true;
                         return ErrorContent(eX.Message);
                     }
 
@@ -140,11 +130,10 @@ namespace WebResearch.Controllers
         [POST("api/uri/update")]
         public ActionResult Update(ACUri uri)
         {
-            using (ISession session = DBSession.Current.CreateSession())
+            using (var db = new DBSession("default"))
             {
+                ISession session = db.Session;
                 ACUri oldUri = session.Get<ACUri>(uri.UriCode);
-
-                ITransaction trans = null;
 
                 if (null != oldUri)
                 {
@@ -152,15 +141,12 @@ namespace WebResearch.Controllers
                     {
                         session.Evict(oldUri);
 
-                        trans = session.BeginTransaction();
                         session.Update(uri);
 
-                        trans.Commit();
                     }
                     catch (Exception eX)
                     {
-                        if (null != trans)
-                            trans.Rollback();
+                        db.Rollback = true;
                         return ErrorContent(eX.Message);
                     }
 
@@ -174,26 +160,21 @@ namespace WebResearch.Controllers
         }
 
         [POST("api/uri/delete")]
-        public ActionResult Delete(IList<string> delobjs){
-            using (ISession session = DBSession.Current.CreateSession())
+        public ActionResult Delete(List<string> delobjs){
+            using (var db = new DBSession("default"))
             {
-                ITransaction trans = null;
-
+                ISession session = db.Session;
                 try
                 {
-                    trans = session.BeginTransaction();
                     foreach (string uriCode in delobjs)
                     {
                         session.Delete(session.Get<ACUri>(uriCode));
                     }
-                    trans.Commit();
-                    session.Close();
                     return Content("删除成功");
                 }
                 catch (Exception eX)
                 {
-                    if (null != trans)
-                        trans.Rollback();
+                    db.Rollback = true;
                     return ErrorContent(eX.Message);
                 }
             }

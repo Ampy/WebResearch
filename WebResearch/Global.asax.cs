@@ -9,6 +9,8 @@ using System.Web.Routing;
 using System.Web.Script.Serialization;
 using System.Web.Security;
 using WebResearch.Common;
+using WebResearch.NHibernateSession;
+using WebResearch.Relation.Datas;
 
 namespace WebResearch
 {
@@ -26,6 +28,8 @@ namespace WebResearch
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AuthConfig.RegisterAuth();
+
+            DBSession.RegistAssembly(typeof(ACUri).Assembly);
         }
 
         protected void Application_PostAuthenticateRequest(object sender, EventArgs e)
