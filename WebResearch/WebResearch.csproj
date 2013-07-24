@@ -478,7 +478,6 @@
     <Content Include="Views\Shared\_DefaultLayout.cshtml" />
     <Content Include="Views\InstallDB\index.cshtml" />
     <Content Include="Views\Home\MenuPartial.cshtml" />
-    <Content Include="Views\Test\Tree.cshtml" />
     <Content Include="Views\UriManagement\PartialIndex.cshtml" />
     <Content Include="Views\Test\PartialTree.cshtml" />
     <Content Include="Views\Test\PartialCustomer.cshtml" />

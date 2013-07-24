@@ -11,18 +11,19 @@
                             '<button class="btn btn-mini btn-danger btn-remove"><i class="icon-remove"></i>删除节点</button>',
                         '</div>',
                         '<div class="btn-group">',
-                            '<button class="btn btn-mini btn-info btn-refresh"><i class="icon-refresh"></i>刷新</button>',
-                        '</div>',
-                        '<div class="btn-group">',
                             '<button class="btn btn-mini btn-info btn-up"><i class="icon-chevron-up"></i>上移</button>',
                             '<button class="btn btn-mini btn-info btn-down"><i class="icon-chevron-down"></i>下移</button>',
                             '<button class="btn btn-mini btn-info btn-move"><i class="icon-move"></i>移动节点</button>',
                             '<button class="btn btn-mini btn-info btn-cancel"><i class="icon-ban-circle"></i>取消</button>',
                         '</div>',
                     '</div>',
+                '<% } else { %>',
+                     '<div class="btn-group">',
+                        '<button class="btn btn-mini btn-info btn-refresh"><i class="icon-refresh"></i>刷新</button>',
+                     '</div>',
                 '<% } %>'
             ].join('')),
-            editorTemplateUrl: '',
+            treeid: '',
             dlgid: '',
             dlgformid: '',
             editable: false,
@@ -32,17 +33,20 @@
             selectedNode: null,
             modelFactory: function () { },
             currentMode: 'view',
+            editDlgTemplate: '',
             events:{
                 "click button.btn-add": "addingNode",
                 "click button.btn-edit": "editingNode",
-                "click button.btn-remove": "removingNode",
+                "click button.btn-remove": "removeNode",
                 "click button.btn-up": "moveUp",
+                "click button.btn-down": "moveDown",
                 "click button.btn-move": "moveNode",
-                "click button.btn-cancel": "cancelMove"
+                "click button.btn-cancel": "cancelMove",
+                "click button.btn-refresh": "refreshData"
             },
             initialize: function (options) {
                 //_.bindAll(this, "addNode");
-                this.model.bind("remove", this.removeNode, this);
+                //this.model.bind("remove", this.render, this);
                 this.model.bind("afterAddNode", this.addNode, this);
                 this.model.bind("reset", this.render, this);
 
@@ -53,8 +57,9 @@
                 this.editable = options.editable;
                 this.labelTemplate = options.labelTemplate;
                 this.imgUrl = options.imgUrl;
-                this.editorTemplateUrl = options.editorTemplateUrl;
                 this.modelFactory = options.modelFactory;
+                this.treeid = options.treeid;
+                this.editDlgTemplate = options.editDlgTemplate;
 
                 this.treeNodes = new Hashtable();
             },
@@ -81,8 +86,8 @@
 
                 $(this.el).addClass(this.options.spanclass);
 
-                if ('' != this.editorTemplateUrl) {
-                    templateHelper.fetchTemplate(this.editorTemplateUrl, function (tmpl) {
+                if ('' != this.editDlgTemplate) {
+                    templateHelper.fetchTemplate(this.editDlgTemplate, function (tmpl) {
                         context.dlgformid = (new Date()).getTime();
 
                         $("#" + context.dlgid).html(tmpl({
@@ -102,6 +107,7 @@
                                             });
                                             context.model.addNodeByParentID(newNode, context.selectedNode.get("nodeid"));
                                             context.vent.trigger("refresh", context.selectedNode.get("nodeid"));
+                                            context.currentMode = "edit";
                                             $("#" + context.dlgid).dialog("close");
                                             break;
                                         case "editing":
@@ -110,6 +116,7 @@
                                                 editNode.set($(c).data("bindingfield"), $(c).val());
                                             });
                                             context.vent.trigger("refresh", context.selectedNode.get("nodeid"));
+                                            context.currentMode = "edit";
                                             $("#" + context.dlgid).dialog("close");
                                             break;
                                     }
@@ -159,7 +166,10 @@
                     this.selectedNode = node;
                     this.disableAllButton();
 
-                    $("button.btn-move").removeAttr("disabled");
+                    if (!node.isRoot()) {
+                        $("button.btn-move").removeAttr("disabled");
+                        $("button.btn-remove").removeAttr("disabled");
+                    }
 
                     if (null != this.selectedNode) {
                         $("button.btn-add").removeAttr("disabled");
@@ -209,6 +219,9 @@
                 this.treeNodes.clear();
 
                 this.render();
+            },
+            refreshData: function(evt){
+                this.vent.trigger("refreshtreedata", this.treeid);
             },
             createNodeView: function (model) {
                 if (this.labelTemplate) {
@@ -275,17 +288,21 @@
                     this.$el.append(node.render().el);
                 }
             },
-            removeNode: function (delNode) {
-                var nodeid = delNode.get("nodeid");
-
-                var nodeView = this.treeNodes.get(nodeid);
-
-                //if (nodeView)
-                //    nodeView.delete();
-
-                delNode.destroy();
-
-                $('#' + nodeid, this.$el).remove();
+            removeNode: function (evt) {
+                if (null != this.selectedNode) {
+                    var context = this;
+                    messageBox.confirm("要删除选中的节点吗？", function (result) {
+                        if (result) {
+                            var nodeid = context.selectedNode.get("nodeid");
+                            //var nodeView = this.treeNodes.get(nodeid);
+                            //if (nodeView)
+                            //    nodeView.delete();
+                            //delNode.destroy();
+                            context.selectedNode.get("tree").removeNode(context.selectedNode);
+                            context.refreshTree();
+                        }
+                    });
+                }
             },
             getSelected: function () {
                 var selectedNode = this.model.filter(function (item) {

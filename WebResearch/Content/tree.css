@@ -16,10 +16,6 @@
 #tree .nodeselect,
 #tree .node{
     cursor: pointer;
-    padding-right: 2px;
-    padding-left: 2px;
-    padding-bottom: 1px;
-    padding-top: 1px;
     white-space: nowrap;
     clear: both;
     position:relative;
@@ -72,7 +68,13 @@
     cursor:crosshair;
 }
 
+#tree .nodeselect label,
 #tree .node label
 {
-    display: inline;
+    display: inline !important;
 }
+
+    #tree .nodeselect label
+    {
+        background-color:lightblue;
+    }
