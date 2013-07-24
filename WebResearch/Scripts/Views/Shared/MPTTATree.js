@@ -1,5 +1,5 @@
-﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode', 'hashtable', 'templates', 'jqueryui'],
-    function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper) {
+﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode', 'hashtable', 'templates', 'messagebox', 'jqueryui'],
+    function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper, messageBox) {
         var MPTTATreeView = Backbone.View.extend({
             template: _.template([
                 '<div id="<%= dlgid %>"></div>',
@@ -14,10 +14,10 @@
                             '<button class="btn btn-mini btn-info btn-refresh"><i class="icon-refresh"></i>刷新</button>',
                         '</div>',
                         '<div class="btn-group">',
-                            '<button class="btn btn-mini btn-info btn-uplevel"><i class="icon-double-angle-up"></i>上移一级</button>',
                             '<button class="btn btn-mini btn-info btn-up"><i class="icon-chevron-up"></i>上移</button>',
                             '<button class="btn btn-mini btn-info btn-down"><i class="icon-chevron-down"></i>下移</button>',
-                            '<button class="btn btn-mini btn-info btn-downlevel"><i class="icon-double-angle-down"></i>下移一级</button>',
+                            '<button class="btn btn-mini btn-info btn-move"><i class="icon-move"></i>移动节点</button>',
+                            '<button class="btn btn-mini btn-info btn-cancel"><i class="icon-ban-circle"></i>取消</button>',
                         '</div>',
                     '</div>',
                 '<% } %>'
@@ -32,8 +32,16 @@
             selectedNode: null,
             modelFactory: function () { },
             currentMode: 'view',
+            events:{
+                "click button.btn-add": "addingNode",
+                "click button.btn-edit": "editingNode",
+                "click button.btn-remove": "removingNode",
+                "click button.btn-up": "moveUp",
+                "click button.btn-move": "moveNode",
+                "click button.btn-cancel": "cancelMove"
+            },
             initialize: function (options) {
-                _.bindAll(this, "addNode");
+                //_.bindAll(this, "addNode");
                 this.model.bind("remove", this.removeNode, this);
                 this.model.bind("afterAddNode", this.addNode, this);
                 this.model.bind("reset", this.render, this);
@@ -41,8 +49,6 @@
                 this.vent = options.vent;
                 this.vent.bind("refreshtree", this.refreshTree, this);
                 this.vent.bind("nodeselected", this.nodeSelected, this);
-                this.vent.bind("addingnode", this.addingNode, this);
-                this.vent.bind("editingnode", this.editingNode, this);
 
                 this.editable = options.editable;
                 this.labelTemplate = options.labelTemplate;
@@ -60,7 +66,11 @@
 
                 var context = this;
 
+                this.treeNodes.clear();
+
                 this.dlgid = (new Date()).getTime();
+
+                this.currentMode = this.editable ? "edit" : "view";
 
                 $(this.el).html(this.template({
                     dlgid: this.dlgid,
@@ -113,8 +123,6 @@
                 }
 
                 var root = this.model.getRoot();
-
-                root.set({ "editable": this.editable });
                 var node = this.createNodeView(root);
 
                 this.$el.append(node.render().el);
@@ -146,35 +154,51 @@
                 this.vent.trigger("resetform", this.dlgformid);
                 $("#" + this.dlgid).dialog("open");
             },
-            nodeSelected: function(node){
-                this.selectedNode = node;
-                this.disableAllButton();
+            nodeSelected: function (node) {
+                if (this.currentMode == "edit" || this.currentMode == "view") {
+                    this.selectedNode = node;
+                    this.disableAllButton();
 
-                if (null != this.selectedNode) {
-                    $("button.btn-add").removeAttr("disabled");
-                    $("button.btn-edit").removeAttr("disabled");
-                    
-                    if (!this.selectedNode.isRoot() && this.selectedNode.isFirst()) {
-                        $("button.btn-down").removeAttr("disabled");
-                        $("button.btn-downlevel").removeAttr("disabled");
-                        if (!this.selectedNode.parent().isRoot()) {
-                            $("button.btn-uplevel").removeAttr("disabled");
+                    $("button.btn-move").removeAttr("disabled");
+
+                    if (null != this.selectedNode) {
+                        $("button.btn-add").removeAttr("disabled");
+                        $("button.btn-edit").removeAttr("disabled");
+
+                        if (!this.selectedNode.isRoot() && this.selectedNode.isFirst()) {
+                            $("button.btn-down").removeAttr("disabled");
+                        } else if (!this.selectedNode.isRoot() && this.selectedNode.isLast()) {
+                            $("button.btn-up").removeAttr("disabled");
+                        } else if (!this.selectedNode.isRoot() && !this.selectedNode.isFirst() && !this.selectedNode.isLast()) {
+                            if (this.selectedNode.parent().isRoot()) {
+                                $("button.btn-down").removeAttr("disabled");
+                                $("button.btn-up").removeAttr("disabled");
+                            }
                         }
-                    } else if (!this.selectedNode.isRoot() && this.selectedNode.isLast()) {
-                        $("button.btn-up").removeAttr("disabled");
-                        $("button.btn-uplevel").removeAttr("disabled");
-                    } else if (!this.selectedNode.isRoot() && !this.selectedNode.isFirst() && !this.selectedNode.isLast()) {
-                        $("button.btn-down").removeAttr("disabled");
-                        $("button.btn-downlevel").removeAttr("disabled");
-                        $("button.btn-up").removeAttr("disabled");
-                        $("button.btn-uplevel").removeAttr("disabled");
                     }
+                }
+                else if (this.currentMode == "moving") {
+                    var context = this;
+                    
+                    messageBox.confirm("是否移动节点到选择的节点下？", function (result) {
+                        if (result) {
+                            node.get("tree").moveNode(context.selectedNode, node);
+                            context.refreshTree();
+                            context.cancelMove();
+                        }
+                        else {
+                            node.set("selected", false);
+                            context.selectedNode.set("selected", true);
+                        }
+                    });
                 }
             },
             disableAllButton: function(){
                 $("button", this.$el).each(function (index, b) {
                     if (!$(b).hasClass("btn-refresh"))
                         $(b).attr("disabled", true);
+                    if ($(b).hasClass("btn-cancel"))
+                        $(b).attr("style", "display:none");
                 });
             },
             refreshTree: function () {
@@ -226,16 +250,16 @@
                 var parentPath = newNode.parentPath();
                 var parentNode = parentPath.models[parentPath.length - 1];
                 var parentid = parentNode.get("nodeid");
-                newNode.set({ "editable": this.editable });
                 var node = this.createNodeView(newNode);
 
                 this.treeNodes.put(newNode.get("nodeid"), newNode);
+
+                parentNode.set("expand", true);
 
                 if (!parentNode.isRoot()) {
                     var lastChild = parentNode.lastChild();
                     if (null == lastChild) {
                         $('#' + parentid, this.$el).after(node.render().el);
-                        node.edit(null);
                     }
                     else {
                         $('#' + lastChild.get("nodeid"), this.$el).after(node.render().el);
@@ -245,8 +269,6 @@
                                 this.vent.trigger("refresh", item.get("nodeid"));
                             }
                         });
-
-                        node.edit(null);
                     }
                 }
                 else {
@@ -282,6 +304,82 @@
                 this.model.each(function (node) {
                     node.set({ "editable": mode });
                 });
+            },
+            moveUpLevel: function (evt) {
+                if (null != this.selectedNode) {
+                    var parent = this.selectedNode.parent();
+                    var pparent = null;
+                    if (parent.isRoot()) {
+                        pparent = parent;
+                    }
+                    else {
+                        pparent = parent.parent();
+                    }
+
+                    try {
+                        this.selectedNode.get("tree").moveNode(this.selectedNode, pparent);
+                        this.refreshTree();
+                    }
+                    catch (err) {
+                        messageBox.error(err.message);
+                    }
+                }
+            },
+            moveUp: function (evt) {
+                if (null != this.selectedNode) {
+                    //var siblineNode = this.selectedNode.get("tree").getPrevNode(this.selectedNode);
+                    try {
+                        this.selectedNode.get("tree").moveNodePrev(this.selectedNode);
+                        this.refreshTree();
+                    }
+                    catch (err) {
+                        messageBox.error(err.message);
+                    }
+                }
+            },
+            moveDown: function (evt) {
+                if (null != this.selectedNode) {
+                    try {
+                        this.selectedNode.get("tree").moveNodeNext(this.selectedNode);
+                        this.refreshTree();
+                    }
+                    catch (err) {
+                        messageBox.error(err.message);
+                    }
+                }
+            },
+            moveNode: function (evt) {
+                if (null != this.selectedNode) {
+                    $("button", this.$el).each(function (index, btn) {
+                        if ($(btn).hasClass("btn-cancel")) {
+                            $(btn).removeAttr("disabled");
+                            $(btn).removeAttr("style");
+                        }
+                        else {
+                            $(btn).attr("style", "display:none");
+                        }
+                    });
+
+                    this.currentMode = "moving";
+                }
+            },
+            cancelMove: function (evt) {
+                var context = this;
+                $("button", this.$el).each(function (index, btn) {
+                    if ($(btn).hasClass("btn-cancel")) {
+                        $(btn).attr("style", "display:none");
+                    }
+                    else {
+                        $(btn).removeAttr("style");
+                    }
+                });
+
+                this.disableAllButton();
+
+                this.selectedNode.set("selected", false);
+                this.selectedNode = false;
+
+                this.currentMode = "edit";
             }
         });
 

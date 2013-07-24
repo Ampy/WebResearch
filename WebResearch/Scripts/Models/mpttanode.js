@@ -12,6 +12,7 @@ function(Backbone, _){
             checked: false,
             selected: false,
             editable: false,
+            moving: false,
             tree: null
         },
         toJSON: function() {

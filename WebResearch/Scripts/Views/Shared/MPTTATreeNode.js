@@ -55,33 +55,12 @@
                         "<img src='<%= img.page %>' id='imgselector' />",
                     "<% } %>",
                     "<%= labelTemplate(data) %>",
-                    "<% if(data.editable && data.selected) { %>",
-                        "<% if(!data.isRoot) { %>",
-                            "<% if(data.isLast) { %>",
-                                "<a class='btnMove'><i class='icon-arrow-up' data-type='up'></i></a>",
-                                "<a class='btnMove'><i class='icon-circle-arrow-up' data-type='upin'></i></a>",
-                            "<% } else if(data.parent.toJSON().isRoot) { %>",
-                                "<a class='btnMove'><i class='icon-arrow-down'  data-type='down'></i></a>",
-                                "<a class='btnMove'><i class='icon-circle-arrow-down' data-type='downin'></i></a>",
-                            "<% } else { %>",
-                                "<a class='btnMove'><i class='icon-circle-arrow-up' data-type='upin'></i></a>",
-                                "<a class='btnMove'><i class='icon-arrow-up'  data-type='up'></i></a>",
-                                "<a class='btnMove'><i class='icon-arrow-down'  data-type='down'></i></a>",
-                                "<a class='btnMove'><i class='icon-circle-arrow-down' data-type='downin'></i></a>",
-                            "<% } %>",
-                            "<a class='btnEdit'><i class='icon-edit'></i></a>",
-                            "<a class='btnAdd'><i class='icon-plus'></i></a>",
-                        "<% } %>",
-                    "<% } %>",
                 "</div>"
             ].join('')),
             events:{
                 "click img.btntoggle": "toggleClick",
                 "change :checkbox": "checkedChanged",
                 "click img#imgselector": "selectNode",
-                "click a.btnMove": "moveNode",
-                "click a.btnEdit": "edit",
-                "click a.btnAdd": "addSubNode"
             },
             labelTemplate:_.template([
                 "<% if(editable) { %>",
@@ -111,7 +90,6 @@
             render: function () {
                 this.$el.html(this.template({ data: this.model.toJSON(),
                     labelTemplate: this.labelTemplate,
-                    editorTemplate: this.editorTemplate,
                     img: this.imgs()}
                 ));
 
@@ -124,6 +102,10 @@
 
                 this.$el.addClass(this.options.spanclass);
 
+                if (this.model.get("moving")) {
+                    $("div.nodeselect", this.$el).addClass("nodemoving");
+                }
+
                 return this;
             },
             initialize: function(options){
@@ -132,7 +114,7 @@
                 this.model.bind('change:nodename', this.render, this);
                 this.model.bind('change:checked', this.render, this);
                 this.model.bind('change:selected', this.render, this);
-                this.model.bind('change:editable', this.render, this);
+                this.model.bind('change:moving', this.render, this);
                 this.model.bind('destroy', this.deleteMySelf, this);
 
                 this.vent = options.vent;
@@ -151,31 +133,6 @@
 
                 //this.remove();
                 //Backbone.View.prototype.remove.call(this);
-            },
-            edit: function(ev){
-                this.vent.trigger("editingnode");
-            },
-            addSubNode: function(ev){
-                //var newNode = new QuantumCode.MPTTANode();
-                //this.model.get("tree").addNode(newNode, this.model);
-                this.vent.trigger("addingnode");
-            },
-            buttonCommand: function(ev){
-                var commandType = $(ev.target).data("type");
-                switch(commandType){
-                    case "OK":
-                        if('' == this.model.get("nodeid")){
-                            this.model.set({"nodeid":this.txtNodeID.val(), "nodename":this.txtNodeName.val()});
-                        }
-                        else{
-                            this.model.set({"nodename":this.txtNodeName.val()});
-                        }
-                        this.$el.removeClass("nodeediting");
-                        break;
-                    case "CANCEL":
-                        this.$el.removeClass("nodeediting");
-                        break;
-                }
             },
             SelectAll: function(selected){
                 this.model.get("tree").each(function(item){
@@ -246,89 +203,6 @@
                     if(nodeid == this.model.get("nodeid")){
                         this.render();
                     }
-                }
-            },
-            moveNode: function (ev) {
-                var moveType = $(ev.target).data("type");
-                switch (moveType) {
-                    case "up":
-                        if (this.model.isFirst()) {
-                            var parent = this.model.parent();
-                            var pparent = null;
-                            if (parent.isRoot()) {
-                                pparent = parent;
-                            }
-                            else {
-                                pparent = parent.parent();
-                            }
-
-                            try {
-                                this.model.get("tree").moveNode(this.model, pparent);
-                                this.vent.trigger("refreshtree");
-                            }
-                            catch (err) {
-                                alert(err);
-                            }
-                        }
-                        else {
-                            try {
-                                this.model.get("tree").moveNodePrev(this.model);
-                                this.vent.trigger("refreshtree");
-                            }
-                            catch (err) {
-                                alert(err);
-                            }
-                        }
-                        break;
-                    case "down":
-                        if (this.model.isLast()) {
-                            var parent = this.model.parent();
-                            var pparent = null;
-                            if (parent.isRoot()) {
-                                pparent = parent;
-                            }
-                            else {
-                                pparent = parent.parent();
-                            }
-
-                            try {
-                                this.model.get("tree").moveNode(this.model, pparent);
-                                this.vent.trigger("refreshtree");
-                            }
-                            catch (err) {
-                                alert(err.message);
-                            }
-                        }
-                        else {
-                            try {
-                                this.model.get("tree").moveNodeNext(this.model);
-                                this.vent.trigger("refreshtree");
-                            }
-                            catch (err) {
-                                alert(err.message);
-                            }
-                        }
-                        break;
-                    case "upin":
-                        var siblineNode = this.model.get("tree").getPrevNode(this.model);
-                        try {
-                            this.model.get("tree").moveNode(this.model, siblineNode);
-                            this.vent.trigger("refreshtree");
-                        }
-                        catch (err) {
-                            alert(err.message);
-                        }
-                        break;
-                    case "downin":
-                        var siblineNode = this.model.get("tree").getNextNode(this.model);
-                        try {
-                            this.model.get("tree").moveNode(this.model, siblineNode);
-                            this.vent.trigger("refreshtree");
-                        }
-                        catch (err) {
-                            alert(err.message);
-                        }
-                        break;
                 }
             }
         });

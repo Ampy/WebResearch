@@ -66,11 +66,10 @@
     display: inline;
 }
 
-#tree .nodeselect label
-{
-    display: inline;
-    background-color: #c0d2ec;
-    font-weight: bold;
+#tree .nodemoving label {
+    background-color:GrayText;
+    text-decoration: dashed;
+    cursor:crosshair;
 }
 
 #tree .node label
