@@ -17,13 +17,15 @@
                             model: mymenus,
                             treeid: treeid,
                             editable: true,
+                            checkable: true,
                             spanclass: "span11",
                             vent: pagecontext.current().vent,
                             imgUrl: options.imgUrl,
                             editDlgTemplate: options.editDlgTemplate,
                             modelFactory: function () {
                                 return new menu();
-                            }
+                            },
+                            textField: "menuCaption"
                         });
 
                         tree.render();

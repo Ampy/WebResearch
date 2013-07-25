@@ -1,17 +1,18 @@
-﻿define(['jquery', 'backbone', 'underscore', 'bootstrap'],
-    function ($, Backbone, _) {
+﻿define(['jquery', 'backbone', 'underscore', 'utils', 'bootstrap'],
+    function ($, Backbone, _, utils) {
         var MPTTATreeNodeView = Backbone.View.extend({
             imgUrl: '',
+            checkable: false,
             vent: null,
             template: _.template([
                 "<% if(data.visible) { %>",
                     "<% if(data.selected) {%>",
-                        "<div class='nodeselect' id='inner<%= data.nodeid %>'>",
+                        "<div class='nodeselect' id='inner<%= getPropValue(data, valueField) %>'>",
                     "<% } else { %>",
-                        "<div class='node' id='inner<%= data.nodeid %>'>",
+                        "<div class='node' id='inner<%= getPropValue(data, valueField) %>'>",
                     "<% } %>",
                 "<% } else { %>",
-                    "<div style='display:none' id='inner<%= data.nodeid %>'>",
+                    "<div style='display:none' id='inner<%= getPropValue(data, valueField) %>'>",
                 "<% } %>",
                     "<span>",
                         "<% if(null != data.parentPath) { %>",
@@ -27,15 +28,15 @@
                     "<% if(data.hasChild) { %>",
                             "<% if(data.expand) { %>",
                                 "<% if(data.isLast) { %>",
-                                    "<img id='toggle<%= data.nodeid %>' class='btntoggle' src='<%= img.minusbottom %>' />",
+                                    "<img id='toggle<%= getPropValue(data, valueField) %>' class='btntoggle' src='<%= img.minusbottom %>' />",
                                 "<% } else { %>",
-                                    "<img id='toggle<%= data.nodeid %>' class='btntoggle' src='<%= img.minus %>' />",
+                                    "<img id='toggle<%= getPropValue(data, valueField) %>' class='btntoggle' src='<%= img.minus %>' />",
                                 "<% } %>",
                             "<% } else { %>",
                                 "<% if(data.isLast) { %>",
-                                    "<img id='toggle<%= data.nodeid %>' class='btntoggle' src='<%= img.plusbottom %>' />",
+                                    "<img id='toggle<%= getPropValue(data, valueField) %>' class='btntoggle' src='<%= img.plusbottom %>' />",
                                 "<% } else { %>",
-                                    "<img id='toggle<%= data.nodeid %>' class='btntoggle' src='<%= img.plus %>' />",
+                                    "<img id='toggle<%= getPropValue(data, valueField) %>' class='btntoggle' src='<%= img.plus %>' />",
                                 "<% } %>",
                             "<% } %>",
                     "<% } else { %>",
@@ -54,24 +55,21 @@
                     "<% } else { %>",
                         "<img src='<%= img.page %>' id='imgselector' />",
                     "<% } %>",
-                    "<%= labelTemplate(data) %>",
+                    "<% if(checkable) { %>",
+                        "<% if(data.checked) { %>",
+                            "<input type='checkbox' checked='true' id='chk<%= getPropValue(data, valueField) %>' />",
+                        "<% } else { %>",
+                            "<input type='checkbox' id='chk<%= getPropValue(data, valueField) %>' />",
+                        "<% } %>",
+                    "<% } %>",
+                    "<label for='chk<%= getPropValue(data, valueField) %>' title='<%= getPropValue(data, textField) %>'><%= getPropValue(data, textField) %></label>",
                 "</div>"
             ].join('')),
             events:{
                 "click img.btntoggle": "toggleClick",
                 "change :checkbox": "checkedChanged",
-                "click img#imgselector": "selectNode",
+                "click img#imgselector": "selectNode"
             },
-            labelTemplate:_.template([
-                "<% if(editable) { %>",
-                    "<% if(checked) { %>",
-                        "<input type='checkbox' checked='true' id='chk<%= nodeid %>' />",
-                    "<% } else { %>",
-                        "<input type='checkbox' id='chk<%= nodeid %>' />",
-                    "<% } %>",
-                "<% } %>",
-                "<label for='chk<%= nodeid %>' title='<%= menuCaption %>'><%= menuCaption %></label>"
-            ].join('')),
             imgs: function(){
                 return{
                     "minusbottom": this.imgUrl + "/minusbottom.gif",
@@ -90,7 +88,12 @@
             render: function () {
                 this.$el.html(this.template({ data: this.model.toJSON(),
                     labelTemplate: this.labelTemplate,
-                    img: this.imgs()}
+                    img: this.imgs(),
+                    checkable: this.checkable,
+                    valueField: this.valueField,
+                    textField: this.textField,
+                    getPropValue: utils.getValueByProperty
+                }
                 ));
 
                 this.txtNodeID = this.$("#txtNodeID_" + this.model.get("nodeid"));
@@ -118,14 +121,11 @@
                 this.model.bind('destroy', this.deleteMySelf, this);
 
                 this.vent = options.vent;
+                this.checkable = options.checkable;
 
                 this.vent.bind("refresh", this.refresh, this);
 
-                if(options.labelTemplate){
-                    this.labelTemplate = options.labelTemplate;
-                }
-
-                this.imgUrl = options.imgUrl;
+                $.extend(this, options);
             },
             deleteMySelf: function(){
                 //this.undelegateEvents();
@@ -191,12 +191,28 @@
                     }
                 }
             },
-            checkedChanged: function(ev){
-                this.model.set({"checked": $(ev.target).attr("checked")});
-                var context = $(ev.target);
-                this.model.allChilds().each(function(item){
-                    item.set({"checked":context.attr("checked")});
+            checkedChanged: function (ev) {
+                this.model.set({ "checked": ev.currentTarget.checked }, { silent: true });
+                this.model.allChilds().each(function (item) {
+                    item.set({ "checked": ev.currentTarget.checked });
                 });
+                if (null != this.model.parent()) {
+                    this.checkedParent(this.model.parent(), ev.currentTarget.checked);
+                }
+            },
+            checkedParent: function(node, checkState){
+                var allChildeCheckedSame = true;
+                node.allChilds().each(function (item) {
+                    if (item.get("checked") != checkState)
+                        allChildeCheckedSame = false;
+                });
+
+                if (allChildeCheckedSame) {
+                    node.set({ "checked": checkState });
+                    if (null != node.parent()) {
+                        this.checkedParent(node.parent(), checkState);
+                    }
+                }
             },
             refresh: function(nodeid){
                 if(null != nodeid){

@@ -1,5 +1,5 @@
-﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode', 'hashtable', 'templates', 'messagebox', 'jqueryui'],
-    function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper, messageBox) {
+﻿define(['jquery', 'backbone', 'underscore', 'views/shared/mpttatreenode', 'hashtable', 'templates', 'messagebox', 'utils', 'jqueryui'],
+    function ($, Backbone, _, MPTTATreeNodeView, Hashtable, templateHelper, messageBox, utils) {
         var MPTTATreeView = Backbone.View.extend({
             template: _.template([
                 '<div id="<%= dlgid %>"></div>',
@@ -27,6 +27,7 @@
             dlgid: '',
             dlgformid: '',
             editable: false,
+            checkable: false,
             vent: null,
             imgUrl: '',
             treeNodes: null,
@@ -34,6 +35,8 @@
             modelFactory: function () { },
             currentMode: 'view',
             editDlgTemplate: '',
+            valueField: 'nodeid',
+            textField: 'nodename',
             events:{
                 "click button.btn-add": "addingNode",
                 "click button.btn-edit": "editingNode",
@@ -54,12 +57,7 @@
                 this.vent.bind("refreshtree", this.refreshTree, this);
                 this.vent.bind("nodeselected", this.nodeSelected, this);
 
-                this.editable = options.editable;
-                this.labelTemplate = options.labelTemplate;
-                this.imgUrl = options.imgUrl;
-                this.modelFactory = options.modelFactory;
-                this.treeid = options.treeid;
-                this.editDlgTemplate = options.editDlgTemplate;
+                $.extend(this, options);
 
                 this.treeNodes = new Hashtable();
             },
@@ -166,12 +164,12 @@
                     this.selectedNode = node;
                     this.disableAllButton();
 
-                    if (!node.isRoot()) {
-                        $("button.btn-move").removeAttr("disabled");
-                        $("button.btn-remove").removeAttr("disabled");
-                    }
-
                     if (null != this.selectedNode) {
+                        if (!this.selectedNode.isRoot()) {
+                            $("button.btn-move").removeAttr("disabled");
+                            $("button.btn-remove").removeAttr("disabled");
+                        }
+
                         $("button.btn-add").removeAttr("disabled");
                         $("button.btn-edit").removeAttr("disabled");
 
@@ -224,23 +222,15 @@
                 this.vent.trigger("refreshtreedata", this.treeid);
             },
             createNodeView: function (model) {
-                if (this.labelTemplate) {
-                    return new MPTTATreeNodeView({
-                        model: model,
-                        vent: this.vent,
-                        spanclass: this.options.spanclass,
-                        labelTemplate: this.labelTemplate,
-                        imgUrl: this.imgUrl
-                    });
-                }
-                else {
-                    return new MPTTATreeNodeView({
-                        model: model,
-                        vent: this.vent,
-                        spanclass: this.options.spanclass,
-                        imgUrl: this.imgUrl
-                    });
-                }
+                return new MPTTATreeNodeView({
+                    model: model,
+                    vent: this.vent,
+                    spanclass: this.options.spanclass,
+                    imgUrl: this.imgUrl,
+                    checkable: this.checkable,
+                    valueField: this.valueField,
+                    textField: this.textField
+                });
             },
             appendNode: function (pnodeview, cnode) {
                 cnode.set({ "editable": this.editable });

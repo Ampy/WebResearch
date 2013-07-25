@@ -1,5 +1,5 @@
-﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'hashtable', 'messagebox', 'blockui', 'jqueryui', 'colresizable'],
-function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox) {
+﻿define(['jquery', 'underscore', 'backbone', 'views/shared/tablerow', 'templates', 'hashtable', 'messagebox', 'utils', 'blockui', 'jqueryui', 'colresizable'],
+function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox, utils) {
     var tableView = Backbone.View.extend({
         columns: null,
         rows: null,
@@ -18,15 +18,7 @@ function ($, _, Backbone, tableRowView, templateHelper, Hashtable, messageBox) {
         dlgid: null,
         dlgformid: null,
         currentEdit: null,
-        getPropValue: function (item, prop) {
-            for (var p in item) {
-                if (p == prop) {
-                    return item[p];
-                }
-            }
-
-            return undefined;
-        },
+        getPropValue: utils.getValueByProperty,
         editDlgTemplateUrl: '',
         template: _.template([
             '<div id="<%= dlgid %>"></div>',

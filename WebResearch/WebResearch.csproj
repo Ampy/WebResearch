@@ -402,6 +402,7 @@
     <Content Include="Scripts\lib\quantumcode.js" />
     <Content Include="Scripts\lib\require.js" />
     <Content Include="Scripts\lib\underscore-min.js" />
+    <Content Include="Scripts\utils.js" />
     <Content Include="Scripts\Views\Shared\MPTTATree.js" />
     <Content Include="Scripts\Views\Shared\MPTTATreeNode.js" />
     <Content Include="Scripts\Views\Shared\records.js" />

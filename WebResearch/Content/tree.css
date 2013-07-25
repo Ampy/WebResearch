@@ -53,13 +53,15 @@
     display: inline;
 }
 
-#tree .nodeselect input,
-#tree .node input{
+#tree .nodeselect input[type="checkbox"],
+#tree .node input[type="checkbox"]{
     height:13px;
     vertical-align:bottom;
     margin-bottom:3px;
     margin-top:-1px;
     display: inline;
+    opacity: 100;
+    position: relative;
 }
 
 #tree .nodemoving label {
