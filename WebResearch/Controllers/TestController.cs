@@ -34,22 +34,22 @@ namespace WebResearch.Controllers
             Tree<Menu> tree = new Tree<Menu>();
 
             Menu m1 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "菜单" };
-            Menu m2 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "测试菜单" };
+            Menu m2 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "testtree" };
             m2.Uri = new ACUri()
             {
                 Uri = "test/tree",
                 UriCode = "testtree",
                 UriDescription = "树形控件测试"
             };
-            Menu m3 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "基础数据维护" };
-            Menu m4 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "客户维护" };
+            Menu m3 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "datamaintain" };
+            Menu m4 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "customerMaintain" };
             m4.Uri = new ACUri()
             {
                 Uri = "test/customer",
                 UriCode = "testcustomer",
                 UriDescription = "客户维护"
             };
-            Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "Uri维护" };
+            Menu m5 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "urimanage" };
             m5.Uri = new ACUri()
             {
                 Uri = "urimanagement",
@@ -57,10 +57,10 @@ namespace WebResearch.Controllers
                 UriDescription = "Uri维护"
             };
 
-            Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库维护" };
+            Menu m6 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "dbmaintain" };
 
-            Menu m7 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库管理" };
-            Menu m10 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "数据库创建" };
+            Menu m7 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "dbmanagment" };
+            Menu m10 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "createdb" };
             m10.Uri = new ACUri()
             {
                 Uri = "InstallDB",
@@ -68,7 +68,7 @@ namespace WebResearch.Controllers
                 UriDescription = "安装数据库"
             };
 
-            Menu m8 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "初始化数据" };
+            Menu m8 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "initdata" };
             m8.Uri = new ACUri()
             {
                 Uri = "InstallDB/InitialData",
@@ -76,7 +76,7 @@ namespace WebResearch.Controllers
                 UriDescription = "初始化数据"
             };
 
-            Menu m9 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "删除数据库" };
+            Menu m9 = new Menu() { NodeID = Guid.NewGuid().ToString(), MenuCaption = "deldb" };
             m9.Uri = new ACUri()
             {
                 Uri = "InstallDB/DeleteDB",

@@ -6,10 +6,12 @@
         'appcontext',
         'views/shared/records',
         'views/shared/table',
+        'i18n!nls/localize',
+        'nls/localizeUtil',
         'blockui',
         'bootstrap',
         'jqueryui'],
-function ($, Backbone, _, Router, global, pageContext, records, tableView) {
+function ($, Backbone, _, Router, global, pageContext, records, tableView, localize, localizUtile) {
     return {
         initialize: function (options) {
             var r = new records({
@@ -23,9 +25,9 @@ function ($, Backbone, _, Router, global, pageContext, records, tableView) {
                 vent: pageContext.current().vent,
                 editDlgTemplateUrl: options.editDlgTemplateUrl,
                 columns: [
-                    { caption: "Uri代码", field: "uriCode", visible: true, orderable: true, width: '144', isPrimary: true },
-                    { caption: "Uri", field: "uri", visible: true, orderable: true, width: '144' },
-                    { caption: "Uri描述", field: "uriDescription", visible: true, orderable: false, width: '144' }
+                    { caption: localize.uricode, field: "uriCode", visible: true, orderable: true, width: '144', isPrimary: true },
+                    { caption: localize.uriaddress, field: "uri", visible: true, orderable: true, width: '144' },
+                    { caption: localize.uridescription, field: "uriDescription", visible: true, orderable: false, width: '144' }
                 ],
                 model: r
             });

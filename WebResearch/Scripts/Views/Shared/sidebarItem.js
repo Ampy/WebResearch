@@ -1,4 +1,5 @@
-﻿define(['jquery', 'underscore', 'backbone', 'views/shared/subsidebaritem'], function ($, _, Backbone, SubSidebarItemView) {
+﻿define(['jquery', 'underscore', 'backbone', 'views/shared/subsidebaritem', 'nls/localizeUtil'],
+    function ($, _, Backbone, SubSidebarItemView, localizeUtil) {
     var sideBarItemView = Backbone.View.extend({
         tagName: 'li',
         parent: null,
@@ -14,7 +15,7 @@
                 '<% } %>',
             '<% } %>',
                     '<i class="icon-dashboard"></i>',
-                    '<span class="menu-text"><%= menu.menuCaption %></span>',
+                    '<span class="menu-text"><%= localizeUtil.getText(menu.menuCaption) %></span>',
                 '<% if(menu.hasChild) { %>',
                     '<b class="arrow icon-angle-down"></b>',
                 '<% } %>',
@@ -53,7 +54,8 @@
         },
         render: function () {
             this.$el.html(this.template({
-                menu: this.model.toJSON()
+                menu: this.model.toJSON(),
+                localizeUtil: localizeUtil
             }));
 
             var context = this;
